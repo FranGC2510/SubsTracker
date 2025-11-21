@@ -10,6 +10,8 @@ module org.dam.fcojavier.substracker {
     requires org.kordamp.bootstrapfx.core;
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
+    requires jbcrypt;
+    requires java.sql;
 
     opens org.dam.fcojavier.substracker to javafx.fxml;
     exports org.dam.fcojavier.substracker;
