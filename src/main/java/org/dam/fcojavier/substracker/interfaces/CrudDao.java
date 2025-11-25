@@ -7,13 +7,13 @@ import java.util.List;
  * @param <T> Tipo de la entidad
  */
 public interface CrudDao<T> {
-    void create(T entity);
+    boolean create(T entity);
 
     T findById(int id);
 
     List<T> findAll();
 
-    void update(T entity);
+    boolean update(T entity);
 
-    void delete(int id);
+    boolean delete(int id);
 }
