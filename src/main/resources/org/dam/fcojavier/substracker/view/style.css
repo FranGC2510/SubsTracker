@@ -1,0 +1,105 @@
+.root {
+    /* Definición de colores base */
+    -fx-primary-color: #1E2A38;       /* Azul petróleo oscuro (Fondo general / Inputs) */
+    -fx-secondary-color: #3A506B;     /* Azul gris (Tarjeta / Paneles) */
+    -fx-accent-color: #00D1B2;        /* Turquesa (Botones / Foco / Títulos) */
+    -fx-accent-hover: #00A38A;        /* Turquesa oscuro (Hover) */
+    -fx-text-light: #F5F7FA;          /* Texto claro principal */
+    -fx-text-muted: #B0BEC5;          /* Texto secundario (gris claro) */
+
+    /* Fondo con un degradado sutil usando el color primario */
+    -fx-bg-gradient: linear-gradient(to bottom right, #1E2A38, #16202b);
+}
+
+/* --- Fondo General (StackPane) --- */
+.background-pane {
+    -fx-background-color: -fx-bg-gradient;
+}
+
+/* --- Tarjeta de Contenido (Login Box) --- */
+.card-pane {
+    -fx-background-color: -fx-secondary-color; /* Azul gris profesional */
+    -fx-background-radius: 15;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 15, 0, 0, 5); /* Sombra más marcada */
+    -fx-padding: 40;
+    -fx-spacing: 20;
+    -fx-alignment: center;
+    -fx-max-width: 380;
+}
+
+/* --- Títulos --- */
+.title-label {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -fx-text-light;    /* Texto blanco */
+    -fx-font-family: "Segoe UI", sans-serif;
+}
+
+.subtitle-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: -fx-accent-color;  /* El subtítulo en Turquesa para destacar */
+}
+
+/* --- Campos de Texto (Inputs) --- */
+.text-field, .password-field {
+    /* Fondo más oscuro que la tarjeta para efecto de profundidad ("cut-out") */
+    -fx-background-color: -fx-primary-color;
+    -fx-text-fill: -fx-text-light;
+    -fx-prompt-text-fill: -fx-text-muted;
+
+    -fx-background-radius: 8;
+    -fx-border-color: transparent;
+    -fx-border-radius: 8;
+    -fx-border-width: 2;
+    -fx-padding: 12;
+    -fx-font-size: 14px;
+}
+
+/* Estado Focus (Cuando escribes) */
+.text-field:focused, .password-field:focused {
+    -fx-background-color: -fx-primary-color;
+    -fx-border-color: -fx-accent-color; /* Borde Turquesa brillante */
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 209, 178, 0.4), 8, 0, 0, 0); /* Resplandor turquesa */
+}
+
+/* --- Botones --- */
+.button-primary {
+    -fx-background-color: -fx-accent-color;
+    -fx-text-fill: #1E2A38; /* Texto oscuro para contraste con el turquesa brillante */
+    -fx-font-weight: bold;
+    -fx-font-size: 15px;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-padding: 12 25;
+}
+
+.button-primary:hover {
+    -fx-background-color: -fx-accent-hover; /* Se oscurece ligeramente */
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 209, 178, 0.4), 10, 0, 0, 2);
+}
+
+.button-primary:pressed {
+    -fx-background-color: -fx-text-light; /* Flash blanco al pulsar */
+    -fx-translate-y: 1; /* Efecto de hundimiento */
+}
+
+/* --- Separador --- */
+.separator *.line {
+    -fx-border-style: solid;
+    -fx-border-width: 1px;
+    -fx-border-color: rgba(255, 255, 255, 0.1); /* Línea muy sutil */
+    -fx-background-color: null;
+}
+
+/* --- Mensajes de Error --- */
+.error-label {
+    -fx-text-fill: #FF6B6B; /* Un rojo suave pastel que combina con modo oscuro */
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+/* Cuando un campo tiene la clase 'error' */
+.text-field.error, .password-field.error {
+    -fx-border-color: #FF6B6B; /* Rojo pastel */
+    -fx-border-width: 2px;
+    -fx-effect: dropshadow(three-pass-box, rgba(255, 107, 107, 0.4), 8, 0, 0, 0); /* Resplandor rojo suave */
+}

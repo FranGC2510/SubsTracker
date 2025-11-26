@@ -3,7 +3,7 @@ package org.dam.fcojavier.substracker.utils;
 import java.time.LocalDate;
 
 public class Validaciones {
-    private static final String EMAIL_REGEX = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+    private static final String EMAIL = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
 
     /**
      * Verifica que un texto no sea nulo ni esté vacío.
@@ -21,7 +21,7 @@ public class Validaciones {
      */
     public static boolean esEmailValido(String email) {
         if (!esTextoValido(email)) return false;
-        return email.matches(EMAIL_REGEX);
+        return email.matches(EMAIL);
     }
 
     /**

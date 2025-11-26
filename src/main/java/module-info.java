@@ -14,5 +14,6 @@ module org.dam.fcojavier.substracker {
     requires java.sql;
 
     opens org.dam.fcojavier.substracker to javafx.fxml;
+    opens org.dam.fcojavier.substracker.controller to javafx.fxml;
     exports org.dam.fcojavier.substracker;
 }
