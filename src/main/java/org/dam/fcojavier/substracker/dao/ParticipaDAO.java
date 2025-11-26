@@ -9,10 +9,7 @@ import org.dam.fcojavier.substracker.model.enums.Categoria;
 import org.dam.fcojavier.substracker.model.enums.Ciclo;
 import org.dam.fcojavier.substracker.model.enums.MetodoPago;
 
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,15 +29,15 @@ import java.util.List;
  * @version 1.0
  */
 public class ParticipaDAO implements CrudDao<Participa> {
-    private final String create_sql="INSERT INTO participa (id_usuario, id_suscripcion, cantidadApagar, fecha_pagado, metodo_pago, descripcion, periodos_cubiertos) VALUES (?, ?, ?, ?, ?, ?, ?)";
-    private final String update_sql="UPDATE participa SET cantidadApagar = ?, fecha_pagado = ?, metodo_pago = ?, descripcion = ?, periodos_cubiertos = ? WHERE id_usuario=? AND id_suscripcion=?";
-    private final String delete_sql="DELETE FROM participa WHERE id_usuario=? AND id_suscripcion=?";
+    private final String create_sql="INSERT INTO participa (id_suscripcion, id_usuario, nombre_invitado, cantidadApagar, fecha_pagado, metodo_pago, descripcion, periodos_cubiertos) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    private final String update_sql = "UPDATE participa SET nombre_invitado=?, cantidadApagar=?, fecha_pagado=?, metodo_pago=?, descripcion=?, periodos_cubiertos=? WHERE id_participa=?";
+    private final String delete_sql = "DELETE FROM participa WHERE id_participa=?";
     private final String SELECT_BASE =
             "SELECT p.*, " +
                     "u.id_usuario, u.email, u.nombre AS u_nombre, u.apellidos, " +
                     "s.id_suscripcion, s.nombre AS s_nombre, s.precio, s.ciclo, s.categoria " +
                     "FROM participa p " +
-                    "INNER JOIN usuario u ON p.id_usuario = u.id_usuario " +
+                    "LEFT JOIN usuario u ON p.id_usuario = u.id_usuario " +
                     "INNER JOIN suscripcion s ON p.id_suscripcion = s.id_suscripcion ";
 
     private final String find_all_sql = SELECT_BASE;
@@ -56,13 +53,26 @@ public class ParticipaDAO implements CrudDao<Participa> {
     @Override
     public boolean create(Participa participa) {
         try(PreparedStatement pstm = ConnectionDB.getConnection().prepareStatement(create_sql)){
-            pstm.setInt(1, participa.getParticipante().getId_usuario());
-            pstm.setInt(2, participa.getSuscripcion().getIdSuscripcion());
-            pstm.setDouble(3, participa.getCantidadApagar());
-            pstm.setDate(4, Date.valueOf(participa.getFecha_pagado()));
-            pstm.setString(5, participa.getMetodo_pago().name());
-            pstm.setString(6, participa.getDescripcion());
-            pstm.setInt(7, participa.getPeriodos_cubiertos());
+            pstm.setInt(1, participa.getSuscripcion().getIdSuscripcion());
+
+            if (participa.getParticipante() != null) {
+                pstm.setInt(2, participa.getParticipante().getId_usuario());
+                pstm.setNull(3, Types.VARCHAR);
+            } else {
+                pstm.setNull(2, Types.INTEGER);
+                pstm.setString(3, participa.getNombreInvitado());
+            }
+
+            pstm.setDouble(4, participa.getCantidadApagar());
+
+            if (participa.getFecha_pagado() != null)
+                pstm.setDate(5, Date.valueOf(participa.getFecha_pagado()));
+            else
+                pstm.setNull(5, Types.DATE);
+
+            pstm.setString(6, participa.getMetodo_pago().name());
+            pstm.setString(7, participa.getDescripcion());
+            pstm.setInt(8, participa.getPeriodos_cubiertos());
 
             return pstm.executeUpdate() > 0;
         }catch (SQLException e){
@@ -120,18 +130,24 @@ public class ParticipaDAO implements CrudDao<Participa> {
      */
     @Override
     public boolean update(Participa participa) {
-        try(PreparedStatement pstm = ConnectionDB.getConnection().prepareStatement(update_sql)){
-            pstm.setDouble(1, participa.getCantidadApagar());
-            pstm.setDate(2, Date.valueOf(participa.getFecha_pagado()));
-            pstm.setString(3, participa.getMetodo_pago().name());
-            pstm.setString(4, participa.getDescripcion());
-            pstm.setInt(5, participa.getPeriodos_cubiertos());
-            pstm.setInt(6, participa.getParticipante().getId_usuario());
-            pstm.setInt(7, participa.getSuscripcion().getIdSuscripcion());
+        try (PreparedStatement pstm = ConnectionDB.getConnection().prepareStatement(update_sql)) {
+
+            pstm.setString(1, participa.getNombreInvitado());
+            pstm.setDouble(2, participa.getCantidadApagar());
+
+            if (participa.getFecha_pagado() != null)
+                pstm.setDate(3, Date.valueOf(participa.getFecha_pagado()));
+            else
+                pstm.setNull(3, Types.DATE);
+
+            pstm.setString(4, participa.getMetodo_pago().name());
+            pstm.setString(5, participa.getDescripcion());
+            pstm.setInt(6, participa.getPeriodos_cubiertos());
+            pstm.setInt(7, participa.getIdParticipa());
 
             return pstm.executeUpdate() > 0;
-        }catch (SQLException e){
-            System.out.println("Error actualizando participa: " + e.getMessage());
+        } catch (SQLException e) {
+            e.printStackTrace();
             return false;
         }
     }
@@ -142,12 +158,18 @@ public class ParticipaDAO implements CrudDao<Participa> {
      * Para eliminar una participación se requiere identificar al usuario y a la suscripción.
      * Use {@link #delete(int, int)} en su lugar.
      *
-     * @param id ID simple.
+     * @param idParticipa ID simple.
      * @throws UnsupportedOperationException Siempre.
      */
     @Override
-    public boolean delete(int id) {
-        throw new UnsupportedOperationException("Usar delete(idUsuario, idSuscripcion)");
+    public boolean delete(int idParticipa) {
+        try (PreparedStatement pstm = ConnectionDB.getConnection().prepareStatement(delete_sql)) {
+            pstm.setInt(1, idParticipa);
+            return pstm.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     /**
@@ -223,20 +245,24 @@ public class ParticipaDAO implements CrudDao<Participa> {
      */
     private Participa obtenerParticipa(ResultSet rs) throws SQLException{
         Participa p = new Participa();
+        p.setIdParticipa(rs.getInt("id_participa")); // Nuevo ID
         p.setCantidadApagar(rs.getDouble("cantidadApagar"));
-        p.setFecha_pagado(rs.getDate("fecha_pagado").toLocalDate());
+        Date fecha = rs.getDate("fecha_pagado");
+        if (fecha != null) p.setFecha_pagado(fecha.toLocalDate());
+
         p.setMetodo_pago(MetodoPago.valueOf(rs.getString("metodo_pago")));
-        p.setDescripcion(rs.getString("descripcion"));
         p.setPeriodos_cubiertos(rs.getInt("periodos_cubiertos"));
+        p.setNombreInvitado(rs.getString("nombre_invitado"));
 
         // Cargar usuario y suscripción completos
-        Usuario u = new Usuario();
-        u.setId_usuario(rs.getInt("id_usuario"));
-        u.setEmail(rs.getString("email"));
-        u.setNombre(rs.getString("u_nombre"));   // ¡Ojo al alias!
-        u.setApellidos(rs.getString("apellidos"));
-        // No traemos el password por seguridad y eficiencia
-        p.setParticipante(u);
+        int idUsuario = rs.getInt("id_usuario");
+        if (!rs.wasNull() && idUsuario > 0) {
+            Usuario u = new Usuario();
+            u.setId_usuario(idUsuario);
+            u.setNombre(rs.getString("u_nombre"));
+            u.setEmail(rs.getString("email"));
+            p.setParticipante(u);
+        }
 
         Suscripcion s = new Suscripcion();
         s.setIdSuscripcion(rs.getInt("id_suscripcion"));

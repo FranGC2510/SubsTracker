@@ -1,17 +1,30 @@
 package org.dam.fcojavier.substracker.controller;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import org.dam.fcojavier.substracker.dao.ParticipaDAO;
 import org.dam.fcojavier.substracker.dao.SuscripcionDAO;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import org.dam.fcojavier.substracker.model.Participa;
 import org.dam.fcojavier.substracker.model.Usuario;
 import org.dam.fcojavier.substracker.model.enums.Categoria;
 import org.dam.fcojavier.substracker.model.enums.Ciclo;
 import org.dam.fcojavier.substracker.model.Suscripcion;
 import org.dam.fcojavier.substracker.utils.Validaciones;
 
+import java.io.IOException;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 public class DetalleSuscripcionController {
@@ -26,17 +39,24 @@ public class DetalleSuscripcionController {
     @FXML private Label lblTituloDetalle;
     @FXML private Label lblTotalGastado;
     @FXML private Label lblFechaInicioEstadistica;
+    @FXML private ScrollPane scrollParticipantes;
+    @FXML private VBox containerParticipantes;
+    @FXML private VBox panelNoColaboradores;
+    @FXML private Label lblGastoNeto;
+    @FXML private Label lblGastoBruto;
 
     private MainController mainController; // Referencia para volver
     private Usuario usuarioLogueado;
 
     private Suscripcion suscripcionActual;
     private SuscripcionDAO suscripcionDAO;
+    private ParticipaDAO participaDAO;
     private boolean huboCambios = false; // Para avisar a la tabla padre
     private boolean modoEdicion = false; // Controla el estado
 
     public DetalleSuscripcionController() {
         this.suscripcionDAO = new SuscripcionDAO();
+        this.participaDAO = new ParticipaDAO();
     }
 
     @FXML
@@ -51,7 +71,6 @@ public class DetalleSuscripcionController {
         this.usuarioLogueado = usuario;
         this.mainController = main;
 
-        // Rellenar campos
         txtNombre.setText(suscripcion.getNombre());
         txtPrecio.setText(String.valueOf(suscripcion.getPrecio()));
         comboCiclo.setValue(suscripcion.getCiclo());
@@ -60,18 +79,97 @@ public class DetalleSuscripcionController {
         dpFechaRenovacion.setValue(suscripcion.getFechaRenovacion());
 
         actualizarEstadisticas();
+        cargarParticipantes();
+    }
+
+    private void cargarParticipantes() {
+        if (suscripcionActual != null) {
+            List<Participa> lista = participaDAO.findBySuscripcionId(suscripcionActual.getIdSuscripcion());
+
+            if (lista.isEmpty()) {
+                scrollParticipantes.setVisible(false);
+                panelNoColaboradores.setVisible(true);
+            } else {
+                scrollParticipantes.setVisible(true);
+                panelNoColaboradores.setVisible(false);
+
+                // Limpiar lista anterior
+                containerParticipantes.getChildren().clear();
+
+                for (Participa p : lista) {
+                    try {
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/dam/fcojavier/substracker/view/itemColaborador.fxml"));
+                        HBox tarjeta = loader.load();
+
+                        ItemColaboradorController itemController = loader.getController();
+
+                        itemController.setDatos(p, suscripcionActual.getCiclo(), () -> {
+                            abrirModalEditarColaborador(p);
+                        });
+
+                        containerParticipantes.getChildren().add(tarjeta);
+
+                    } catch (IOException e) { e.printStackTrace(); }
+                }
+            }
+        }
+        actualizarEstadisticas();
+    }
+
+    private void abrirModalEditarColaborador(Participa participaAEditar) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/dam/fcojavier/substracker/view/formColaboradorView.fxml"));
+            Parent root = loader.load();
+
+            FormColaboradorController controller = loader.getController();
+            controller.setSuscripcion(suscripcionActual);
+
+            controller.setParticipaEditar(participaAEditar);
+
+            Stage stage = new Stage();
+            stage.initModality(Modality.WINDOW_MODAL);
+            stage.initOwner(scrollParticipantes.getScene().getWindow());
+            stage.setScene(new Scene(root));
+            stage.setMinWidth(500);
+            stage.setMinHeight(350);
+            stage.showAndWait();
+
+            if (controller.isGuardado()) {
+                cargarParticipantes();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void actualizarEstadisticas() {
         if (suscripcionActual != null) {
-            // 1. Calculamos el total usando el método del modelo
-            double total = suscripcionActual.calcularGastoTotal(LocalDate.now());
 
-            // 2. Formateamos a 2 decimales con símbolo €
-            lblTotalGastado.setText(String.format("%.2f €", total));
+            List<Participa> colaboradores = participaDAO.findBySuscripcionId(suscripcionActual.getIdSuscripcion());
+            double totalAportacionesPorCiclo = 0;
 
-            // 3. Mostramos la fecha de inicio formateada
-            lblFechaInicioEstadistica.setText("Desde el " + suscripcionActual.getFechaActivacion().toString());
+            for (Participa p : colaboradores) {
+                totalAportacionesPorCiclo += p.getCantidadApagar();
+            }
+
+            double precioTotalCiclo = suscripcionActual.getPrecio();
+            double miCosteRealCiclo = precioTotalCiclo - totalAportacionesPorCiclo;
+
+            long numPagos = suscripcionActual.calcularNumeroDePagos(LocalDate.now());
+
+            double historicoBruto = precioTotalCiclo * numPagos;
+            double historicoNeto = miCosteRealCiclo * numPagos;
+
+            lblGastoNeto.setText(String.format("%.2f €", historicoNeto));
+            lblGastoBruto.setText(String.format("%.2f €", historicoBruto));
+
+            if (historicoNeto < 0) {
+                lblGastoNeto.setStyle("-fx-font-size: 38; -fx-font-weight: bold; -fx-text-fill: #2ecc71;"); // Verde (Beneficio)
+            } else {
+                lblGastoNeto.setStyle("-fx-font-size: 38; -fx-font-weight: bold; -fx-text-fill: -fx-accent-color;"); // Turquesa (Gasto)
+            }
+
+            lblFechaInicioEstadistica.setText("Calculado sobre " + numPagos + " ciclos (" + suscripcionActual.getFechaActivacion() + ")");
         }
     }
 
@@ -166,6 +264,29 @@ public class DetalleSuscripcionController {
 
     public boolean huboCambios() {
         return huboCambios;
+    }
+
+    @FXML
+    private void abrirModalColaborador(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/dam/fcojavier/substracker/view/formColaboradorView.fxml"));
+            Parent root = loader.load();
+
+            FormColaboradorController controller = loader.getController();
+            controller.setSuscripcion(suscripcionActual);
+
+            Stage stage = new Stage();
+            stage.initModality(Modality.WINDOW_MODAL);
+            stage.initOwner(txtNombre.getScene().getWindow());
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+
+            if (controller.isGuardado()) {
+                cargarParticipantes(); // Refrescar la tabla
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
 

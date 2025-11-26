@@ -1,5 +1,6 @@
 package org.dam.fcojavier.substracker.model;
 
+import org.dam.fcojavier.substracker.model.enums.Ciclo;
 import org.dam.fcojavier.substracker.model.enums.MetodoPago;
 
 import java.time.LocalDate;
@@ -18,7 +19,7 @@ import java.util.Objects;
  * @version 1.0
  */
 public class Participa {
-
+    private int idParticipa;
     /**
      * Cantidad monetaria que el participante aporta.
      */
@@ -43,6 +44,8 @@ public class Participa {
      * Notas adicionales sobre el aporte (ej. "Pago correspondiente a Enero").
      */
     private String descripcion;
+
+    private String nombreInvitado;
 
     /**
      * La suscripción a la que se está contribuyendo.
@@ -76,6 +79,17 @@ public class Participa {
         this.participante = participante;
     }
 
+    // Constructor para INVITADOS (Sin objeto Usuario)
+    public Participa(String nombreInvitado, Double cantidad, Suscripcion sub, MetodoPago metodo, LocalDate fecha) {
+        this.nombreInvitado = nombreInvitado;
+        this.cantidadApagar = cantidad;
+        this.suscripcion = sub;
+        this.metodo_pago = metodo;
+        this.fecha_pagado = fecha;
+        this.periodos_cubiertos = 1;
+        this.participante = null;
+    }
+
     /**
      * Constructor completo.
      * Inicializa todos los atributos de la participación.
@@ -98,6 +112,9 @@ public class Participa {
         this.suscripcion = suscripcion;
         this.participante = participante;
     }
+
+    public int getIdParticipa() { return idParticipa; }
+    public void setIdParticipa(int idParticipa) { this.idParticipa = idParticipa; }
 
     /**
      * Obtiene la cantidad a pagar.
@@ -179,6 +196,9 @@ public class Participa {
         this.descripcion = descripcion;
     }
 
+    public String getNombreInvitado() { return nombreInvitado; }
+    public void setNombreInvitado(String nombreInvitado) { this.nombreInvitado = nombreInvitado; }
+
     /**
      * Obtiene la suscripción asociada.
      * @return Objeto Suscripcion.
@@ -211,6 +231,47 @@ public class Participa {
      */
     public void setParticipante(Usuario participante) {
         this.participante = participante;
+    }
+
+    public String getNombreVisual() {
+        if (participante != null) {
+            return participante.getNombre(); // Si es usuario registrado
+        } else {
+            return nombreInvitado + " (Invitado)"; // Si es externo
+        }
+    }
+
+    /**
+     * Calcula la fecha hasta la cual el usuario tiene cubierto el pago.
+     * @param cicloSuscripcion El ciclo de la suscripción padre (Mensual, Anual...).
+     * @return La fecha en la que caduca su aporte.
+     */
+    public LocalDate getFechaFinCobertura(Ciclo cicloSuscripcion) {
+        if (fecha_pagado == null) return LocalDate.MIN;
+
+        long mesesASumar = 0;
+
+        switch (cicloSuscripcion) {
+            case MENSUAL:
+                mesesASumar = periodos_cubiertos;
+                break;
+            case TRIMESTRAL:
+                mesesASumar = periodos_cubiertos * 3L;
+                break;
+            case ANUAL:
+                mesesASumar = periodos_cubiertos * 12L;
+                break;
+        }
+
+        return fecha_pagado.plusMonths(mesesASumar);
+    }
+
+    /**
+     * Verifica si el usuario está al día con el pago respecto a la fecha actual.
+     */
+    public boolean isAlDia(Ciclo cicloSuscripcion) {
+        LocalDate finCobertura = getFechaFinCobertura(cicloSuscripcion);
+        return !finCobertura.isBefore(LocalDate.now());
     }
 
     /**

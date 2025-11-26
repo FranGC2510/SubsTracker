@@ -355,6 +355,30 @@ public class Suscripcion {
     }
 
     /**
+     * Calcula el número de veces que se ha pagado la suscripción desde el inicio hasta hoy.
+     */
+    public long calcularNumeroDePagos(LocalDate fechaHasta) {
+        if (fechaHasta == null || fechaActivacion == null || fechaActivacion.isAfter(fechaHasta)) {
+            return 0;
+        }
+
+        long periodosTranscurridos = 0;
+
+        switch (ciclo) {
+            case MENSUAL:
+                periodosTranscurridos = java.time.temporal.ChronoUnit.MONTHS.between(fechaActivacion, fechaHasta);
+                break;
+            case TRIMESTRAL:
+                periodosTranscurridos = java.time.temporal.ChronoUnit.MONTHS.between(fechaActivacion, fechaHasta) / 3;
+                break;
+            case ANUAL:
+                periodosTranscurridos = java.time.temporal.ChronoUnit.YEARS.between(fechaActivacion, fechaHasta);
+                break;
+        }
+        return periodosTranscurridos + 1; // +1 porque se paga por adelantado el primer día
+    }
+
+    /**
      * Compara suscripciones basándose en su ID.
      * @param o Objeto a comparar.
      * @return true si los IDs coinciden.

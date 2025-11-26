@@ -320,3 +320,95 @@
     -fx-padding: 0;
     -fx-shape: " ";
 }
+
+/* --- TARJETAS DE LISTA (COLABORADORES) --- */
+
+.list-card {
+    -fx-background-color: -fx-primary-color; /* Fondo más oscuro que el contenedor */
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: transparent;
+    -fx-border-width: 0 0 0 4; /* Borde izquierdo de 4px para el estado */
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 5, 0, 0, 2);
+    -fx-padding: 10 15;
+}
+
+.list-card:hover {
+    -fx-background-color: derive(-fx-primary-color, 10%); /* Un poco más claro al pasar ratón */
+    -fx-cursor: hand;
+}
+
+/* Estados visuales (Borde Izquierdo) */
+.card-pagado {
+    -fx-border-color: #2ecc71; /* Verde */
+}
+
+.card-pendiente {
+    -fx-border-color: #e74c3c; /* Rojo */
+}
+
+/* Texto del importe */
+.money-text {
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+}
+
+/* --- BOTÓN DE PELIGRO (ELIMINAR) --- */
+.button-danger {
+    -fx-background-color: rgba(231, 76, 60, 0.15); /* Fondo rojo muy suave */
+    -fx-text-fill: #e74c3c; /* Rojo intenso */
+    -fx-border-color: #e74c3c;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-font-weight: bold;
+    -fx-font-size: 15px;
+    -fx-cursor: hand;
+    -fx-padding: 10 20;
+}
+
+.button-danger:hover {
+    -fx-background-color: #e74c3c; /* Rojo sólido al pasar el ratón */
+    -fx-text-fill: white;
+}
+
+/* Opcional: Para asegurar que ambos botones miden lo mismo si usamos esta clase */
+.action-button {
+    -fx-pref-width: 160px; /* Ancho fijo para simetría */
+    -fx-alignment: center;
+}
+
+/* --- TAMAÑO DE TEXTO GENERAL (INPUTS) --- */
+.text-field, .password-field, .combo-box .list-cell, .date-picker .text-field {
+    -fx-font-size: 16px; /* Aumentado para mejor lectura */
+}
+
+/* Aumentar un poco el tamaño de los botones también */
+.button-primary, .button-danger, .button-secondary {
+    -fx-font-size: 15px;
+}
+
+/* --- SPINNER (SELECTOR NUMÉRICO) --- */
+.spinner {
+    -fx-background-color: -fx-primary-color;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-border-color: transparent;
+}
+
+.spinner .text-field {
+    -fx-background-color: -fx-primary-color;
+    -fx-text-fill: white;
+    -fx-alignment: center-right; /* Número a la derecha */
+}
+
+.spinner .increment-arrow-button,
+.spinner .decrement-arrow-button {
+    -fx-background-color: -fx-secondary-color;
+    -fx-body-color: -fx-accent-color; /* Color de las flechitas */
+}
+
+.spinner .increment-arrow-button:hover,
+.spinner .decrement-arrow-button:hover {
+    -fx-background-color: -fx-accent-color;
+}
