@@ -15,5 +15,6 @@ module org.dam.fcojavier.substracker {
 
     opens org.dam.fcojavier.substracker to javafx.fxml;
     opens org.dam.fcojavier.substracker.controller to javafx.fxml;
+    opens org.dam.fcojavier.substracker.model to javafx.base;
     exports org.dam.fcojavier.substracker;
 }

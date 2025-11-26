@@ -4,6 +4,7 @@ import org.dam.fcojavier.substracker.model.enums.Categoria;
 import org.dam.fcojavier.substracker.model.enums.Ciclo;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -317,6 +318,40 @@ public class Suscripcion {
      */
     public void setParticipantes(List<Participa> participantes) {
         this.participantes = participantes;
+    }
+
+    /**
+     * Calcula el dinero total gastado teóricamente desde la fecha de activación hasta hoy.
+     * Asume que los pagos se realizan por adelantado al inicio de cada ciclo.
+     */
+    public double calcularGastoTotal(LocalDate fechaHasta) {
+        LocalDate hoy = LocalDate.now();
+
+        // Validación: Si no hay fecha, no podemos calcular
+        if (fechaHasta == null || fechaActivacion == null) return 0.0;
+
+        if (fechaActivacion.isAfter(fechaHasta)) {
+            return 0.0;
+        }
+
+        long periodosTranscurridos = 0;
+
+        switch (ciclo) {
+            case MENSUAL:
+                periodosTranscurridos = ChronoUnit.MONTHS.between(fechaActivacion, fechaHasta);
+                break;
+            case TRIMESTRAL:
+                periodosTranscurridos = ChronoUnit.MONTHS.between(fechaActivacion, fechaHasta) / 3;
+                break;
+            case ANUAL:
+                periodosTranscurridos = ChronoUnit.YEARS.between(fechaActivacion, fechaHasta);
+                break;
+        }
+
+        // Sumamos 1 porque el primer pago se hace el día de la activación (pago por adelantado)
+        long totalPagos = periodosTranscurridos + 1;
+
+        return totalPagos * precio;
     }
 
     /**

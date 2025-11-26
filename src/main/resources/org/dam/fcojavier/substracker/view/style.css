@@ -103,3 +103,220 @@
     -fx-border-width: 2px;
     -fx-effect: dropshadow(three-pass-box, rgba(255, 107, 107, 0.4), 8, 0, 0, 0); /* Resplandor rojo suave */
 }
+
+/* --- ESTILOS DE TABLA (DARK MODE) --- */
+
+.table-view {
+    -fx-background-color: transparent; /* Fondo transparente para ver el gradiente detrás si se quiere */
+    -fx-border-color: transparent;
+}
+
+/* Cabecera de las columnas */
+.table-view .column-header-background {
+    -fx-background-color: -fx-primary-color;
+    -fx-background-radius: 5 5 0 0;
+}
+
+.table-view .column-header, .table-view .filler {
+    -fx-background-color: transparent;
+    -fx-size: 45px; /* Altura de la cabecera */
+    -fx-border-color: transparent;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: -fx-text-muted;
+    -fx-font-weight: bold;
+    -fx-alignment: center-left;
+}
+
+/* Celdas (Filas) */
+.table-row-cell {
+    -fx-background-color: -fx-secondary-color; /* Azul Gris */
+    -fx-border-color: transparent;
+    -fx-table-cell-border-color: transparent;
+}
+
+/* Filas impares (para efecto cebra sutil) */
+.table-row-cell:odd {
+    -fx-background-color: derive(-fx-secondary-color, 5%); /* Un pelín más claro */
+}
+
+/* Texto dentro de las celdas */
+.table-cell {
+    -fx-text-fill: white;
+    -fx-alignment: center-left;
+    -fx-font-size: 14px;
+    -fx-padding: 0 0 0 10; /* Margen izquierdo */
+}
+
+/* Fila seleccionada */
+.table-row-cell:selected {
+    -fx-background-color: -fx-accent-color; /* Turquesa */
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+}
+
+/* Texto en fila seleccionada */
+.table-row-cell:selected .table-cell {
+    -fx-text-fill: -fx-primary-color; /* Texto oscuro para contraste */
+}
+
+/* --- Estados de la columna Activo/Pausado --- */
+
+.estado-activo {
+    -fx-text-fill: #2ecc71; /* Verde Esmeralda */
+    -fx-font-weight: bold;
+}
+
+.estado-pausado {
+    -fx-text-fill: #e74c3c; /* Rojo Alizarin */
+    -fx-font-weight: bold;
+    -fx-opacity: 0.7; /* Un poco más apagado */
+}
+
+/* --- ESTILOS AVANZADOS PARA FORMULARIOS (DARK MODE) --- */
+
+/* 1. ComboBox y DatePicker (El campo visible) */
+.combo-box, .date-picker {
+    -fx-background-color: -fx-primary-color; /* Fondo oscuro */
+    -fx-background-radius: 8;
+    -fx-border-color: transparent;
+    -fx-border-radius: 8;
+    -fx-padding: 2; /* Ajuste fino */
+}
+
+/* El texto dentro del combo/date picker */
+.combo-box .list-cell, .date-picker .text-field {
+    -fx-text-fill: -fx-text-light;
+    -fx-background-color: transparent;
+}
+
+/* El botón de la flecha/calendario */
+.combo-box .arrow-button, .date-picker .arrow-button {
+    -fx-background-color: transparent;
+}
+
+.combo-box .arrow, .date-picker .arrow {
+    -fx-background-color: -fx-accent-color; /* Flecha turquesa */
+}
+
+/* 2. El Desplegable del ComboBox (La lista que se abre) */
+.combo-box-popup .list-view {
+    -fx-background-color: -fx-primary-color; /* Fondo oscuro lista */
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 10, 0, 0, 5);
+}
+
+.combo-box-popup .list-cell {
+    -fx-text-fill: -fx-text-light;
+    -fx-background-color: transparent;
+    -fx-padding: 10;
+}
+
+.combo-box-popup .list-cell:hover {
+    -fx-background-color: -fx-secondary-color; /* Hover azul gris */
+}
+
+.combo-box-popup .list-cell:filled:selected {
+    -fx-background-color: -fx-accent-color; /* Seleccionado Turquesa */
+    -fx-text-fill: -fx-primary-color; /* Texto oscuro */
+}
+
+/* 3. El Calendario del DatePicker (Pop-up) */
+.date-picker-popup {
+    -fx-background-color: -fx-primary-color;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 10, 0, 0, 5);
+}
+
+.date-picker-popup .month-year-pane {
+    -fx-background-color: -fx-secondary-color;
+}
+
+.date-picker-popup .month-year-pane .label {
+    -fx-text-fill: -fx-text-light;
+}
+
+.date-picker-popup .day-cell {
+    -fx-background-color: -fx-primary-color;
+    -fx-text-fill: -fx-text-light;
+}
+
+.date-picker-popup .day-cell:hover {
+    -fx-background-color: -fx-secondary-color;
+}
+
+.date-picker-popup .selected {
+    -fx-background-color: -fx-accent-color;
+    -fx-text-fill: -fx-primary-color;
+    -fx-font-weight: bold;
+}
+
+/* --- AJUSTES DE TAMAÑO DE FUENTE --- */
+
+/* Aumentamos el tamaño general de los inputs y combos */
+.text-field, .password-field, .combo-box .list-cell, .date-picker .text-field {
+    -fx-font-size: 15px; /* Antes era 14px o default */
+}
+
+/* --- BOTÓN SECUNDARIO (CANCELAR) --- */
+/* Estilo "Ghost Button": Transparente pero con borde visible */
+.button-secondary {
+    -fx-background-color: transparent;
+    -fx-border-color: #B0BEC5; /* Gris claro visible */
+    -fx-border-radius: 8;
+    -fx-border-width: 1.5px;
+    -fx-text-fill: #B0BEC5;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-padding: 10 25;
+}
+
+.button-secondary:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.1); /* Sutil fondo blanco al pasar */
+    -fx-border-color: white;
+    -fx-text-fill: white;
+}
+
+/* --- CAMPOS DESHABILITADOS (Modo Lectura) --- */
+.text-field:disabled, .combo-box:disabled, .date-picker:disabled {
+    -fx-opacity: 0.9; /* Que se vea casi opaco */
+    -fx-text-fill: -fx-text-light; /* Texto blanco */
+    -fx-background-color: transparent; /* Sin fondo para parecer solo texto */
+    -fx-border-color: #536e8a; /* Borde sutil para saber que es un campo */
+    -fx-border-style: dashed; /* Estilo discontinuo para indicar "no editable" */
+}
+
+/* --- SCROLL PANE Y SCROLL BARS (DARK MODE) --- */
+
+/* El fondo del área de scroll (debe ser transparente para ver el fondo azul) */
+.scroll-pane, .scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+/* La barra vertical/horizontal en sí */
+.scroll-bar:vertical, .scroll-bar:horizontal {
+    -fx-background-color: transparent;
+}
+
+/* El "carril" por donde se mueve la barra */
+.scroll-bar:vertical .track, .scroll-bar:horizontal .track {
+    -fx-background-color: rgba(0, 0, 0, 0.1);
+    -fx-border-radius: 10em;
+    -fx-background-radius: 10em;
+}
+
+/* La "pastilla" que arrastras (Thumb) */
+.scroll-bar:vertical .thumb, .scroll-bar:horizontal .thumb {
+    -fx-background-color: -fx-secondary-color; /* Azul Gris */
+    -fx-background-radius: 10em;
+}
+
+.scroll-bar:vertical .thumb:hover, .scroll-bar:horizontal .thumb:hover {
+    -fx-background-color: -fx-accent-color; /* Turquesa al pasar el ratón */
+}
+
+/* Ocultar las flechas de las barras de scroll para un look más moderno */
+.scroll-bar .increment-button, .scroll-bar .decrement-button {
+    -fx-padding: 0;
+    -fx-shape: " ";
+}

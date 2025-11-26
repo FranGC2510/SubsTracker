@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+<VBox spacing="0.0" styleClass="background-pane" stylesheets="@style.css"
+      xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.dam.fcojavier.substracker.controller.DetalleSuscripcionController">
+
+    <HBox alignment="CENTER_LEFT" spacing="15.0" style="-fx-padding: 20 30 20 30; -fx-background-color: -fx-primary-color;">
+        <Button onAction="#volverAtras" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 18; -fx-cursor: hand;" text="←" />
+
+        <Label style="-fx-font-size: 24; -fx-text-fill: white;" text="🔍" />
+        <VBox>
+            <Label fx:id="lblTituloDetalle" style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: white;" text="Detalle Suscripción" />
+            <Label style="-fx-font-size: 14; -fx-text-fill: -fx-text-muted;" text="Información completa y estadísticas" />
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button onAction="#eliminarSuscripcion" style="-fx-background-color: #e74c3c; -fx-text-fill: white;" text="🗑 Eliminar Suscripción" />
+    </HBox>
+
+    <VBox spacing="20.0" VBox.vgrow="ALWAYS">
+        <padding>
+            <Insets bottom="30.0" left="40.0" right="40.0" top="30.0" />
+        </padding>
+
+        <VBox styleClass="card-pane" maxWidth="Infinity"> <Label styleClass="subtitle-label" text="DATOS GENERALES" />
+
+            <HBox spacing="20.0">
+                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                    <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 12px; -fx-font-weight: bold;" text="NOMBRE" />
+                    <TextField fx:id="txtNombre" disable="true" />
+                </VBox>
+                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                    <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 12px; -fx-font-weight: bold;" text="PRECIO" />
+                    <TextField fx:id="txtPrecio" disable="true" />
+                </VBox>
+            </HBox>
+
+            <HBox spacing="20.0">
+                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                    <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 12px; -fx-font-weight: bold;" text="CICLO" />
+                    <ComboBox fx:id="comboCiclo" disable="true" maxWidth="Infinity" />
+                </VBox>
+                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                    <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 12px; -fx-font-weight: bold;" text="CATEGORÍA" />
+                    <ComboBox fx:id="comboCategoria" disable="true" maxWidth="Infinity" />
+                </VBox>
+            </HBox>
+
+            <HBox spacing="20.0">
+                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                    <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 12px; -fx-font-weight: bold;" text="ACTIVACIÓN" />
+                    <DatePicker fx:id="dpFechaActivacion" disable="true" maxWidth="Infinity" />
+                </VBox>
+                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                    <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 12px; -fx-font-weight: bold;" text="PRÓXIMO PAGO" />
+                    <DatePicker fx:id="dpFechaRenovacion" disable="true" maxWidth="Infinity" />
+                </VBox>
+            </HBox>
+
+            <HBox alignment="CENTER_RIGHT">
+                <Button fx:id="btnEditarGuardar" onAction="#toggleEdicion" styleClass="button-primary" text="Editar Datos" />
+            </HBox>
+            <Label fx:id="lblError" styleClass="error-label" visible="false" />
+        </VBox>
+
+        <HBox spacing="20.0">
+            <VBox alignment="CENTER_LEFT" styleClass="card-pane" HBox.hgrow="ALWAYS">
+                <Label style="-fx-text-fill: -fx-text-muted;" text="TOTAL GASTADO (HISTÓRICO)" />
+
+                <Label fx:id="lblTotalGastado" style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: -fx-accent-color;" text="0.00 €" />
+
+                <Label fx:id="lblFechaInicioEstadistica" style="-fx-font-size: 12; -fx-text-fill: -fx-text-muted;" text="Desde el --/--/----" />
+            </VBox>
+
+            <VBox alignment="CENTER_LEFT" styleClass="card-pane" HBox.hgrow="ALWAYS">
+                <Label style="-fx-text-fill: -fx-text-muted;" text="COPAGADORES" />
+                <Label style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: -fx-accent-color;" text="0" />
+                <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 12;" text="Estás pagando esto solo" />
+            </VBox>
+        </HBox>
+    </VBox>
+</VBox>

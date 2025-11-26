@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+<BorderPane fx:id="mainContainer" prefHeight="700.0" prefWidth="1000.0"
+            stylesheets="@style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.dam.fcojavier.substracker.controller.MainController">
+
+    <left>
+        <VBox prefWidth="250.0" spacing="10.0" style="-fx-background-color: -fx-secondary-color;">
+            <padding>
+                <Insets bottom="20.0" left="20.0" right="20.0" top="30.0" />
+            </padding>
+
+            <Label styleClass="title-label" text="SubTracker" />
+            <Separator opacity="0.3" />
+
+            <VBox spacing="5.0">
+                <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 12;" text="Bienvenido," />
+                <Label fx:id="lblNombreUsuario" style="-fx-text-fill: -fx-accent-color; -fx-font-size: 16; -fx-font-weight: bold;" text="Usuario" />
+            </VBox>
+
+            <Separator opacity="0.3">
+                <VBox.margin>
+                    <Insets bottom="20.0" />
+                </VBox.margin></Separator>
+
+            <Button maxWidth="1.7976931348623157E308" onAction="#mostrarSuscripciones" styleClass="button-primary" text="Mis Suscripciones" />
+            <Button maxWidth="1.7976931348623157E308" onAction="#mostrarEstadisticas" styleClass="button-primary" text="Informes y Gastos" />
+            <Button maxWidth="1.7976931348623157E308" disable="true" styleClass="button-primary" text="Configuración" />
+
+            <VBox VBox.vgrow="ALWAYS" />
+
+            <Button maxWidth="1.7976931348623157E308" onAction="#cerrarSesion" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-cursor: hand;" text="Cerrar Sesión" />
+        </VBox>
+    </left>
+
+    <center>
+        <ScrollPane fitToHeight="true" fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;">
+            <content>
+                <StackPane fx:id="contentArea" styleClass="background-pane">
+                    <children>
+                        <Label style="-fx-text-fill: white; -fx-font-size: 20;" text="Selecciona una opción del menú" />
+                    </children>
+                </StackPane>
+            </content>
+        </ScrollPane>
+    </center>
+
+</BorderPane>

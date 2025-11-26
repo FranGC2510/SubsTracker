@@ -128,14 +128,31 @@ public class LoginController {
     }
 
     private void loginExitoso(Usuario usuario) {
-        lblError.setVisible(false);
-        System.out.println("Login correcto para: " + usuario.getNombre());
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/dam/fcojavier/substracker/view/mainView.fxml"));
+            Parent root = loader.load();
 
-        mostrarAlerta("Bienvenido", "Hola de nuevo, " + usuario.getNombre());
+            MainController mainController = loader.getController();
+            mainController.setUsuario(usuario);
 
-        // TODO: AQUI HAREMOS EL CAMBIO DE PANTALLA (SPRINT 3 - PASO 2)
-        // cerrarVentanaLogin();
-        // abrirVentanaPrincipal(usuario);
+            Stage stage = (Stage) txtEmail.getScene().getWindow();
+
+            stage.setResizable(true);
+
+            stage.setMinWidth(1000);
+            stage.setMinHeight(700);
+
+            Scene scene = new Scene(root);
+
+            stage.setScene(scene);
+            stage.setTitle("SubTracker - Dashboard de " + usuario.getNombre());
+            stage.centerOnScreen();
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            mostrarMensajeError("Error crítico al cargar el Dashboard.");
+        }
     }
 
     private void mostrarAlerta(String titulo, String contenido) {
