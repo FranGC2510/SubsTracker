@@ -6,6 +6,18 @@ import javafx.scene.layout.HBox;
 import org.dam.fcojavier.substracker.model.enums.Ciclo;
 import org.dam.fcojavier.substracker.model.Participa;
 
+/**
+ * Controlador para la vista de un ítem individual (Tarjeta) en la lista de colaboradores.
+ *
+ * Esta clase gestiona la representación visual de un objeto {@link Participa}.
+ * Se encarga de:
+ * Vincular los datos del modelo con las etiquetas de la interfaz.
+ * Aplicar estilos CSS condicionales (Verde/Rojo) según el estado del pago.
+ * Gestionar el evento de clic para permitir la edición del colaborador.
+ *
+ * @author Fco Javier García
+ * @version 1.0
+ */
 public class ItemColaboradorController {
     @FXML private HBox root;
     @FXML private Label lblNombre;
@@ -15,6 +27,17 @@ public class ItemColaboradorController {
 
     private Participa miParticipa;
 
+    /**
+     * Configura los datos visuales y el comportamiento de la tarjeta.
+     *
+     * Este método es llamado externamente por el controlador de la lista ({@link DetalleSuscripcionController})
+     * cada vez que se crea una nueva tarjeta en el bucle.
+     *
+     * @param participa El objeto con los datos del colaborador y su aporte.
+     * @param cicloSuscripcion El ciclo de la suscripción padre (necesario para calcular si el pago ha caducado).
+     * @param onEditAction Un {@link Runnable} (callback) que se ejecutará cuando el usuario haga clic en la tarjeta.
+     * Generalmente abre la ventana modal de edición.
+     */
     public void setDatos(Participa participa, Ciclo cicloSuscripcion, Runnable onEditAction) {
         this.miParticipa = participa;
         lblNombre.setText(participa.getNombreVisual());

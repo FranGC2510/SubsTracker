@@ -116,14 +116,14 @@ public class Tests {
                 else
                     System.err.println("⚠️ Error borrando cobro.");
             }
-
+            /**
             // 2. Borramos Participa (Hijo - Requiere clave compuesta)
             if(participacion.getParticipante() != null) {
                 if(participaDAO.delete(amigo.getId_usuario(), netflix.getIdSuscripcion()))
                     System.out.println("🗑️  Participación eliminada.");
                 else
                     System.err.println("⚠️ Error borrando participación.");
-            }
+            }*/
 
             // 3. Borramos Suscripción (Padre intermedio)
             // IMPORTANTE: Si intentáramos borrar el usuario antes que esto, fallaría por la FK.

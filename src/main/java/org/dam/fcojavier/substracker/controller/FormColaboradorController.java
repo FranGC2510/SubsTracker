@@ -1,9 +1,7 @@
 package org.dam.fcojavier.substracker.controller;
 
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import org.dam.fcojavier.substracker.dao.ParticipaDAO;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
@@ -14,6 +12,21 @@ import org.dam.fcojavier.substracker.utils.Validaciones;
 
 import java.time.LocalDate;
 
+/**
+ * Controlador para la ventana modal de gestión de colaboradores (Participa).
+ *
+ * Esta clase maneja tanto la creación de nuevos colaboradores (invitados)
+ * como la edición de los existentes.
+ *
+ * Características principales:
+ * Gestión de estado "Pagado" vs "Pendiente" mediante CheckBox.
+ * Configuración de periodos cubiertos por el pago (adelantos).
+ * Validación de importes y campos obligatorios.
+ * Comunicación con {@link ParticipaDAO} para persistir los cambios.
+ *
+ * @author Fco Javier García
+ * @version 1.0
+ */
 public class FormColaboradorController {
     @FXML private TextField txtNombre;
     @FXML private TextField txtImporte;
@@ -32,6 +45,16 @@ public class FormColaboradorController {
     private boolean guardado = false;
     private Participa participaEditando;
 
+    /**
+     * Inicializa el controlador y configura los componentes de la interfaz.
+     *
+     * Se ejecuta automáticamente tras cargar el FXML. Configura:
+     * El DAO.
+     * Los valores del ComboBox de métodos de pago.
+     * El Spinner de periodos (Mínimo 1, Máximo 24).
+     * Los Bindings: Deshabilita la fecha y el spinner si el checkbox "Pagado" no está marcado.
+     * Listeners visuales para la opacidad.
+     */
     public void initialize() {
         participaDAO = new ParticipaDAO();
         comboMetodo.getItems().setAll(MetodoPago.values());
@@ -49,10 +72,61 @@ public class FormColaboradorController {
         });
     }
 
+    /**
+     * Establece la suscripción a la que se va a añadir el colaborador.
+     * Necesario solo en el modo "Crear".
+     *
+     * @param sub Objeto {@link Suscripcion} padre.
+     */
     public void setSuscripcion(Suscripcion sub) {
         this.suscripcionActual = sub;
     }
 
+    /**
+     * Configura el formulario en Modo Edición.
+     *
+     * Rellena todos los campos con los datos del colaborador existente y habilita
+     * el botón de eliminar.
+     *
+     * @param p El objeto {@link Participa} que se desea editar.
+     */
+    public void setParticipaEditar(Participa p) {
+        this.participaEditando = p;
+
+        btnGuardar.setText("Guardar Cambios");
+        btnEliminar.setVisible(true);
+
+        if (p.getParticipante() != null) {
+            txtNombre.setText(p.getParticipante().getNombre());
+            txtNombre.setDisable(true);
+        } else {
+            txtNombre.setText(p.getNombreInvitado());
+        }
+
+        txtImporte.setText(String.valueOf(p.getCantidadApagar()));
+        txtDescripcion.setText(p.getDescripcion());
+        comboMetodo.setValue(p.getMetodo_pago());
+
+        if (p.getPeriodos_cubiertos() > 0) {
+            spinnerPeriodos.getValueFactory().setValue(p.getPeriodos_cubiertos());
+        }
+
+        if (p.getFecha_pagado() != null) {
+            chkPagado.setSelected(true);
+            dpFechaPago.setValue(p.getFecha_pagado());
+        } else {
+            chkPagado.setSelected(false);
+            dpFechaPago.setValue(LocalDate.now());
+        }
+    }
+
+    /**
+     * Acción del botón Guardar.
+     *
+     * Valida los datos de entrada y decide si llamar a {@code create} o {@code update}
+     * en el DAO dependiendo del estado del formulario.
+     *
+     */
     @FXML
     private void guardar() {
         String nombre = txtNombre.getText();
@@ -85,10 +159,17 @@ public class FormColaboradorController {
         }
     }
 
+    /**
+     * Cierra la ventana modal actual sin realizar cambios (Botón Cancelar).
+     */
     @FXML private void cerrar() {
         ((Stage) txtNombre.getScene().getWindow()).close();
     }
 
+    /**
+     * Acción del botón Eliminar.
+     * Solo visible en modo edición. Borra el registro de la base de datos.
+     */
     @FXML
     private void eliminar() {
         if (participaEditando == null) return;
@@ -100,39 +181,15 @@ public class FormColaboradorController {
         }
     }
 
+    // MÉTODOS PRIVADOS
+
+    /**
+     * Marca la operación como exitosa y cierra la ventana.
+     * Esto permite a la ventana padre saber que debe refrescar la tabla.
+     */
     private void exito() {
         guardado = true;
         cerrar();
-    }
-
-    public void setParticipaEditar(Participa p) {
-        this.participaEditando = p;
-
-        btnGuardar.setText("Guardar Cambios");
-        btnEliminar.setVisible(true);
-
-        if (p.getParticipante() != null) {
-            txtNombre.setText(p.getParticipante().getNombre());
-            txtNombre.setDisable(true);
-        } else {
-            txtNombre.setText(p.getNombreInvitado());
-        }
-
-        txtImporte.setText(String.valueOf(p.getCantidadApagar()));
-        txtDescripcion.setText(p.getDescripcion());
-        comboMetodo.setValue(p.getMetodo_pago());
-
-        if (p.getPeriodos_cubiertos() > 0) {
-            spinnerPeriodos.getValueFactory().setValue(p.getPeriodos_cubiertos());
-        }
-
-        if (p.getFecha_pagado() != null) {
-            chkPagado.setSelected(true);
-            dpFechaPago.setValue(p.getFecha_pagado());
-        } else {
-            chkPagado.setSelected(false);
-            dpFechaPago.setValue(LocalDate.now());
-        }
     }
 
     private void mostrarError(String msg) {
@@ -140,6 +197,10 @@ public class FormColaboradorController {
         lblError.setVisible(true);
     }
 
+    /**
+     * Permite a la vista padre consultar si se realizaron cambios.
+     * @return true si se creó, editó o eliminó un registro.
+     */
     public boolean isGuardado() { return guardado; }
 }
 

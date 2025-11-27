@@ -1,11 +1,8 @@
 package org.dam.fcojavier.substracker.controller;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
@@ -27,6 +24,18 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Controlador de la vista detallada de una suscripción.
+ *
+ * Gestiona la pantalla "Dashboard" individual de un servicio, permitiendo:
+ * Visualizar y editar los datos principales (nombre, precio, fechas).
+ * Ver estadísticas financieras en tiempo real (Gasto Bruto vs Neto).
+ * Gestionar la lista de colaboradores mediante un sistema de tarjetas dinámicas.
+ * Eliminar la suscripción completa.
+ *
+ * @author Fco Javier García
+ * @version 2.0 (Con estadísticas financieras)
+ */
 public class DetalleSuscripcionController {
     @FXML private TextField txtNombre;
     @FXML private TextField txtPrecio;
@@ -37,7 +46,6 @@ public class DetalleSuscripcionController {
     @FXML private Label lblError;
     @FXML private Button btnEditarGuardar;
     @FXML private Label lblTituloDetalle;
-    @FXML private Label lblTotalGastado;
     @FXML private Label lblFechaInicioEstadistica;
     @FXML private ScrollPane scrollParticipantes;
     @FXML private VBox containerParticipantes;
@@ -45,31 +53,48 @@ public class DetalleSuscripcionController {
     @FXML private Label lblGastoNeto;
     @FXML private Label lblGastoBruto;
 
-    private MainController mainController; // Referencia para volver
+    private MainController mainController;
     private Usuario usuarioLogueado;
 
     private Suscripcion suscripcionActual;
     private SuscripcionDAO suscripcionDAO;
     private ParticipaDAO participaDAO;
-    private boolean huboCambios = false; // Para avisar a la tabla padre
-    private boolean modoEdicion = false; // Controla el estado
+    private boolean huboCambios = false;
+    private boolean modoEdicion = false;
 
+    /**
+     * Constructor por defecto. Inicializa los DAOs.
+     */
     public DetalleSuscripcionController() {
         this.suscripcionDAO = new SuscripcionDAO();
         this.participaDAO = new ParticipaDAO();
     }
 
+    /**
+     * Configuración inicial de los componentes visuales.
+     * Carga los valores de los enumerados en los ComboBoxes.
+     */
     @FXML
     public void initialize() {
         comboCiclo.getItems().setAll(Ciclo.values());
         comboCategoria.getItems().setAll(Categoria.values());
     }
 
-    // Método clave: Recibe los datos al abrir la ventana
+    /**
+     * Método principal de carga de datos (Inyección de Dependencias).
+     *
+     * Se llama desde el {@link MainController} cuando el usuario hace doble clic en la tabla.
+     *
+     * @param suscripcion El objeto {@link Suscripcion} seleccionado.
+     * @param usuario El usuario logueado actualmente.
+     * @param main Referencia al controlador principal para poder navegar "Atrás".
+     */
     public void initData(Suscripcion suscripcion, Usuario usuario, MainController main) {
         this.suscripcionActual = suscripcion;
         this.usuarioLogueado = usuario;
         this.mainController = main;
+
+        lblTituloDetalle.setText(suscripcion.getNombre());
 
         txtNombre.setText(suscripcion.getNombre());
         txtPrecio.setText(String.valueOf(suscripcion.getPrecio()));
@@ -82,6 +107,12 @@ public class DetalleSuscripcionController {
         cargarParticipantes();
     }
 
+    /**
+     * Carga la lista de colaboradores desde la base de datos y genera las tarjetas visuales.
+     *
+     * Utiliza un {@link VBox} dinámico para insertar una tarjeta {@code itemColaborador.fxml}
+     * por cada registro encontrado.
+     */
     private void cargarParticipantes() {
         if (suscripcionActual != null) {
             List<Participa> lista = participaDAO.findBySuscripcionId(suscripcionActual.getIdSuscripcion());
@@ -93,7 +124,6 @@ public class DetalleSuscripcionController {
                 scrollParticipantes.setVisible(true);
                 panelNoColaboradores.setVisible(false);
 
-                // Limpiar lista anterior
                 containerParticipantes.getChildren().clear();
 
                 for (Participa p : lista) {
@@ -116,6 +146,9 @@ public class DetalleSuscripcionController {
         actualizarEstadisticas();
     }
 
+    /**
+     * Abre la ventana modal para editar un colaborador existente.
+     */
     private void abrirModalEditarColaborador(Participa participaAEditar) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/dam/fcojavier/substracker/view/formColaboradorView.fxml"));
@@ -142,37 +175,49 @@ public class DetalleSuscripcionController {
         }
     }
 
+    /**
+     * Calcula y muestra los datos financieros en la tarjeta KPI.
+     *
+     * Algoritmo:
+     * Calcula el coste total histórico del servicio (Bruto).
+     * Suma todas las aportaciones REALES recibidas de colaboradores (teniendo en cuenta periodos pagados).
+     * Resta las aportaciones al bruto para obtener el Gasto Neto del usuario.
+     */
     private void actualizarEstadisticas() {
         if (suscripcionActual != null) {
 
+            long numPagosTranscurridos = suscripcionActual.calcularNumeroDePagos(LocalDate.now());
+            double precioTotalCiclo = suscripcionActual.getPrecio();
+            double historicoBruto = precioTotalCiclo * numPagosTranscurridos;
+
             List<Participa> colaboradores = participaDAO.findBySuscripcionId(suscripcionActual.getIdSuscripcion());
-            double totalAportacionesPorCiclo = 0;
+            double totalDineroRecibido = 0;
 
             for (Participa p : colaboradores) {
-                totalAportacionesPorCiclo += p.getCantidadApagar();
+                if (p.getFecha_pagado() != null) {
+                    double aportePersona = p.getCantidadApagar() * p.getPeriodos_cubiertos();
+                    totalDineroRecibido += aportePersona;
+                }
             }
 
-            double precioTotalCiclo = suscripcionActual.getPrecio();
-            double miCosteRealCiclo = precioTotalCiclo - totalAportacionesPorCiclo;
-
-            long numPagos = suscripcionActual.calcularNumeroDePagos(LocalDate.now());
-
-            double historicoBruto = precioTotalCiclo * numPagos;
-            double historicoNeto = miCosteRealCiclo * numPagos;
+            double historicoNeto = historicoBruto - totalDineroRecibido;
 
             lblGastoNeto.setText(String.format("%.2f €", historicoNeto));
             lblGastoBruto.setText(String.format("%.2f €", historicoBruto));
 
             if (historicoNeto < 0) {
-                lblGastoNeto.setStyle("-fx-font-size: 38; -fx-font-weight: bold; -fx-text-fill: #2ecc71;"); // Verde (Beneficio)
+                lblGastoNeto.setStyle("-fx-font-size: 38; -fx-font-weight: bold; -fx-text-fill: #2ecc71;");
             } else {
-                lblGastoNeto.setStyle("-fx-font-size: 38; -fx-font-weight: bold; -fx-text-fill: -fx-accent-color;"); // Turquesa (Gasto)
+                lblGastoNeto.setStyle("-fx-font-size: 38; -fx-font-weight: bold; -fx-text-fill: -fx-accent-color;");
             }
 
-            lblFechaInicioEstadistica.setText("Calculado sobre " + numPagos + " ciclos (" + suscripcionActual.getFechaActivacion() + ")");
+            lblFechaInicioEstadistica.setText("Calculado sobre " + numPagosTranscurridos + " ciclos (" + suscripcionActual.getFechaActivacion() + ")");
         }
     }
 
+    /**
+     * Navega de vuelta a la lista principal de suscripciones.
+     */
     @FXML
     private void volverAtras(ActionEvent event) {
         if (mainController != null) {
@@ -180,18 +225,25 @@ public class DetalleSuscripcionController {
         }
     }
 
+    /**
+     * Alterna entre el modo "Solo Lectura" y "Edición".
+     * Si ya está en edición, guarda los cambios.
+     */
     @FXML
     private void toggleEdicion(ActionEvent event) {
         if (!modoEdicion) {
             habilitarCampos(true);
             btnEditarGuardar.setText("Guardar Cambios");
-            btnEditarGuardar.setStyle("-fx-background-color: #2ecc71;"); // Cambiar a verde
+            btnEditarGuardar.setStyle("-fx-background-color: #2ecc71;");
             modoEdicion = true;
         } else {
             guardarCambios();
         }
     }
 
+    /**
+     * Recoge los datos del formulario, valida y actualiza la suscripción en la BD.
+     */
     private void guardarCambios() {
         String nombre = txtNombre.getText();
         String precioStr = txtPrecio.getText();
@@ -224,6 +276,10 @@ public class DetalleSuscripcionController {
         }
     }
 
+    /**
+     * Elimina la suscripción actual tras confirmación.
+     * Si tiene éxito, vuelve a la lista automáticamente.
+     */
     @FXML
     private void eliminarSuscripcion(ActionEvent event) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -266,6 +322,9 @@ public class DetalleSuscripcionController {
         return huboCambios;
     }
 
+    /**
+     * Abre el modal para añadir un nuevo colaborador.
+     */
     @FXML
     private void abrirModalColaborador(ActionEvent event) {
         try {

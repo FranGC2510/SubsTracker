@@ -325,9 +325,6 @@ public class Suscripcion {
      * Asume que los pagos se realizan por adelantado al inicio de cada ciclo.
      */
     public double calcularGastoTotal(LocalDate fechaHasta) {
-        LocalDate hoy = LocalDate.now();
-
-        // Validación: Si no hay fecha, no podemos calcular
         if (fechaHasta == null || fechaActivacion == null) return 0.0;
 
         if (fechaActivacion.isAfter(fechaHasta)) {

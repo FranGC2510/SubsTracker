@@ -16,17 +16,18 @@ import java.util.List;
 /**
  * Clase de Acceso a Datos (DAO) para la entidad asociativa {@link Participa}.
  *
- * Gestiona la relación N:M (Muchos a Muchos) entre {@link Usuario} y {@link Suscripcion}.
- * Esta tabla almacena a los "Copagadores" (usuarios que pagan una parte de una suscripción ajena).
+ * Gestiona los aportes económicos ("copagos") realizados a una suscripción.
+ * Esta entidad ha evolucionado para soportar dos tipos de colaboradores:
+ * Usuarios Registrados: Tienen cuenta en la app (relación con {@code id_usuario}).
+ * Invitados: Personas externas (solo nombre) añadidas manualmente por el titular.
  *
- * Particularidades:
- * Clave Primaria Compuesta: La identidad se define por la pareja ({@code id_usuario}, {@code id_suscripcion}).
- * Por este motivo, los métodos estándar {@code findById(int)} y {@code delete(int)} no son soportados.
- * Optimización SQL: Las consultas de lectura utilizan {@code INNER JOIN} para reconstruir
- * los objetos {@code Usuario} y {@code Suscripcion} en una sola consulta a la base de datos.
+ * Características Técnicas:
+ * Uso de LEFT JOIN en consultas SQL para recuperar datos incluso si el usuario es NULL (invitado).
+ * Gestión de campos nulos ({@code setNull}) para fechas y claves foráneas opcionales.
+ * Identificación mediante clave primaria simple {@code id_participa}.
  *
  * @author Fco Javier García
- * @version 1.0
+ * @version 2.0 (Soporte para Invitados)
  */
 public class ParticipaDAO implements CrudDao<Participa> {
     private final String create_sql="INSERT INTO participa (id_suscripcion, id_usuario, nombre_invitado, cantidadApagar, fecha_pagado, metodo_pago, descripcion, periodos_cubiertos) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
@@ -82,18 +83,16 @@ public class ParticipaDAO implements CrudDao<Participa> {
     }
 
     /**
-     * Operación NO SOPORTADA.
+     * Método no implementado.
      *
-     * La entidad {@code Participa} tiene una clave primaria compuesta, por lo que no se puede
-     * buscar por un único entero ID.
+     * La búsqueda por ID individual no suele utilizarse en la lógica de negocio actual,
+     * ya que los accesos se realizan principalmente por suscripción.
      *
-     * @param id ID simple (ignorado).
-     * @throws UnsupportedOperationException Siempre, indicando el uso incorrecto.
+     * @param id ID del registro.
+     * @throws UnsupportedOperationException Siempre.
      */
     @Override
     public Participa findById(int id) {
-        // Como PARTICIPA tiene PK compuesta, este método no se suele usar.
-        // Podemos crear un findByUsuarioYSuscripcion
         throw new UnsupportedOperationException("Usar búsqueda compuesta");
     }
 
@@ -120,12 +119,12 @@ public class ParticipaDAO implements CrudDao<Participa> {
     }
 
     /**
-     * Actualiza los datos de un copago existente.
+     * Actualiza los datos de un colaborador existente.
      *
-     * Permite modificar el monto, fecha o descripción. La identificación de la fila
-     * se hace mediante {@code id_usuario} y {@code id_suscripcion} contenidos en el objeto.
+     * Permite modificar el nombre (si es invitado), el importe, el estado del pago (fecha)
+     * y el número de periodos cubiertos. Utiliza la clave primaria {@code id_participa}.
      *
-     * @param participa Objeto con los datos actualizados.
+     * @param participa Objeto con los datos modificados.
      * @return {@code true} si la actualización fue exitosa.
      */
     @Override
@@ -153,13 +152,10 @@ public class ParticipaDAO implements CrudDao<Participa> {
     }
 
     /**
-     * Operación NO SOPORTADA.
+     * Elimina un registro de participación por su ID único.
      *
-     * Para eliminar una participación se requiere identificar al usuario y a la suscripción.
-     * Use {@link #delete(int, int)} en su lugar.
-     *
-     * @param idParticipa ID simple.
-     * @throws UnsupportedOperationException Siempre.
+     * @param idParticipa Identificador único del registro a borrar.
+     * @return {@code true} si se eliminó correctamente.
      */
     @Override
     public boolean delete(int idParticipa) {
@@ -168,24 +164,6 @@ public class ParticipaDAO implements CrudDao<Participa> {
             return pstm.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
-        }
-    }
-
-    /**
-     * Elimina una participación específica (Dejar de ser copagador).
-     *
-     * @param idUsuario ID del usuario que deja de pagar.
-     * @param idSuscripcion ID de la suscripción afectada.
-     * @return {@code true} si se eliminó el registro correctamente.
-     */
-    public boolean delete(int idUsuario, int idSuscripcion){
-        try(PreparedStatement pstm = ConnectionDB.getConnection().prepareStatement(delete_sql)){
-            pstm.setInt(1, idUsuario);
-            pstm.setInt(2, idSuscripcion);
-            return pstm.executeUpdate() > 0;
-        }catch (SQLException e){
-            System.out.println("Error eliminando participa: " + e.getMessage());
             return false;
         }
     }
