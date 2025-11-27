@@ -154,12 +154,4 @@ public class LoginController {
             mostrarMensajeError("Error crítico al cargar el Dashboard.");
         }
     }
-
-    private void mostrarAlerta(String titulo, String contenido) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(titulo);
-        alert.setHeaderText(null);
-        alert.setContentText(contenido);
-        alert.showAndWait();
-    }
 }

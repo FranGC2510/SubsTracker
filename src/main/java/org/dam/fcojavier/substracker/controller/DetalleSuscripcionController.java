@@ -17,6 +17,7 @@ import org.dam.fcojavier.substracker.model.Usuario;
 import org.dam.fcojavier.substracker.model.enums.Categoria;
 import org.dam.fcojavier.substracker.model.enums.Ciclo;
 import org.dam.fcojavier.substracker.model.Suscripcion;
+import org.dam.fcojavier.substracker.utils.Dialogos;
 import org.dam.fcojavier.substracker.utils.Validaciones;
 
 import java.io.IOException;
@@ -52,6 +53,7 @@ public class DetalleSuscripcionController {
     @FXML private VBox panelNoColaboradores;
     @FXML private Label lblGastoNeto;
     @FXML private Label lblGastoBruto;
+    @FXML private CheckBox chkActivo;
 
     private MainController mainController;
     private Usuario usuarioLogueado;
@@ -78,6 +80,9 @@ public class DetalleSuscripcionController {
     public void initialize() {
         comboCiclo.getItems().setAll(Ciclo.values());
         comboCategoria.getItems().setAll(Categoria.values());
+        chkActivo.selectedProperty().addListener((obs, estabaActivo, ahoraEstaActivo) -> {
+            actualizarEstiloEstado(ahoraEstaActivo);
+        });
     }
 
     /**
@@ -102,9 +107,21 @@ public class DetalleSuscripcionController {
         comboCategoria.setValue(suscripcion.getCategoria());
         dpFechaActivacion.setValue(suscripcion.getFechaActivacion());
         dpFechaRenovacion.setValue(suscripcion.getFechaRenovacion());
+        chkActivo.setSelected(suscripcion.isActivo());
 
+        actualizarEstiloEstado(suscripcion.isActivo());
         actualizarEstadisticas();
         cargarParticipantes();
+    }
+
+    private void actualizarEstiloEstado(boolean activo) {
+        if (activo) {
+            chkActivo.setText("SUSCRIPCIÓN ACTIVA");
+            chkActivo.setStyle("-fx-text-fill: #ffffff; -fx-font-weight: bold; -fx-font-size: 14px; -fx-opacity: 1.0;");
+        } else {
+            chkActivo.setText("SUSCRIPCIÓN PAUSADA");
+            chkActivo.setStyle("-fx-text-fill: #e74c3c; -fx-font-weight: bold; -fx-font-size: 14px; -fx-opacity: 1.0;");
+        }
     }
 
     /**
@@ -253,6 +270,7 @@ public class DetalleSuscripcionController {
             return;
         }
 
+        suscripcionActual.setActivo(chkActivo.isSelected());
         double precio = Double.parseDouble(precioStr.replace(",", "."));
 
         suscripcionActual.setNombre(nombre);
@@ -282,22 +300,25 @@ public class DetalleSuscripcionController {
      */
     @FXML
     private void eliminarSuscripcion(ActionEvent event) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Eliminar Suscripción");
-        alert.setHeaderText("¿Eliminar " + suscripcionActual.getNombre() + "?");
+        Stage ventanaActual = (Stage) btnEditarGuardar.getScene().getWindow();
 
-        Optional<ButtonType> result = alert.showAndWait();
+        Optional<ButtonType> result = Dialogos.mostrarConfirmacion(
+                "Eliminar Suscripción",
+                "¿Estás seguro de eliminar " + suscripcionActual.getNombre() + "?",
+                "Esta acción borrará también el historial de pagos y colaboradores asociados.",
+                ventanaActual
+        );
+
         if (result.isPresent() && result.get() == ButtonType.OK) {
             if (suscripcionDAO.delete(suscripcionActual.getIdSuscripcion())) {
                 volverAtras(event);
             } else {
-                mostrarError("No se pudo eliminar.");
+                Dialogos.mostrarError("Error", "No se pudo eliminar la suscripción.", ventanaActual);
             }
         }
     }
 
     private void habilitarCampos(boolean habilitar) {
-        // disable = !habilitar
         boolean estado = !habilitar;
         txtNombre.setDisable(estado);
         txtPrecio.setDisable(estado);
@@ -305,6 +326,7 @@ public class DetalleSuscripcionController {
         comboCategoria.setDisable(estado);
         dpFechaActivacion.setDisable(estado);
         dpFechaRenovacion.setDisable(estado);
+        chkActivo.setDisable(estado);
     }
 
     @FXML

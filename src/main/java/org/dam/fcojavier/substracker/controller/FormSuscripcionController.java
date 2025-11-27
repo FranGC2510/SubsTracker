@@ -132,9 +132,15 @@ public class FormSuscripcionController {
             dpFechaInicio.setStyle(""); // Limpiar estilo si pasa
         }
 
-        LocalDate fechaRenovacion = calcularProximaFecha(fechaPrimerPago, ciclo);
+        LocalDate fechaRenovacion = fechaPrimerPago;
 
-        Suscripcion nueva = new Suscripcion(0, nombre, precio, ciclo, categoria, fechaActivacion, fechaPrimerPago, usuarioTitular);
+        LocalDate hoy = LocalDate.now();
+
+        while (fechaRenovacion.isBefore(hoy)) {
+            fechaRenovacion = calcularProximaFecha(fechaRenovacion, ciclo);
+        }
+
+        Suscripcion nueva = new Suscripcion(0, nombre, precio, ciclo, categoria, fechaActivacion, fechaRenovacion, usuarioTitular);
 
         if (suscripcionDAO.create(nueva)) {
             System.out.println("Suscripción guardada: " + nueva.getNombre());

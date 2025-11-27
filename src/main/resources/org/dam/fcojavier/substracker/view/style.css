@@ -412,3 +412,128 @@
 .spinner .decrement-arrow-button:hover {
     -fx-background-color: -fx-accent-color;
 }
+
+/* --- BOTÓN DE ACCIÓN EN TABLA (PAGAR) --- */
+.button-pay {
+    -fx-background-color: #f1c40f; /* Amarillo Dorado Sólido */
+    -fx-text-fill: #1E2A38;       /* Texto oscuro */
+    -fx-border-color: #f39c12;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-cursor: hand;
+    -fx-padding: 5 15;
+    -fx-alignment: center;
+}
+
+.button-pay:hover {
+    -fx-background-color: #f39c12; /* Naranja al pasar el ratón */
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 5, 0, 0, 1);
+}
+
+.button-pay:pressed {
+    -fx-background-color: #F5F7FA;
+    -fx-translate-y: 1;
+}
+
+/* --- MEJORAS ESTÉTICAS DE LA TABLA --- */
+
+/* Aumentar altura de filas para que respiren */
+.table-row-cell {
+    -fx-cell-size: 50px; /* Filas más altas (antes eran ~24px por defecto) */
+    -fx-border-width: 0 0 1 0; /* Línea separadora sutil abajo */
+    -fx-border-color: rgba(255,255,255,0.05);
+}
+
+/* Texto general de las celdas */
+.table-cell {
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 0 15; /* Más margen lateral */
+}
+
+/* Quitar bordes feos de la cabecera */
+.table-view .column-header {
+    -fx-background-color: transparent;
+    -fx-border-width: 0 0 2 0;
+    -fx-border-color: -fx-accent-color; /* Línea turquesa bajo la cabecera */
+}
+
+.table-view .column-header .label {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -fx-accent-color; /* Texto cabecera en color acento */
+    -fx-alignment: CENTER; /* Centrar títulos */
+}
+
+/* --- DIÁLOGOS Y ALERTAS (DARK MODE) --- */
+
+.dialog-pane {
+    -fx-background-color: -fx-secondary-color; /* Fondo Azul Gris */
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+
+    -fx-padding: 0;
+}
+
+/* El encabezado (donde sale el icono ?) */
+.dialog-pane .header-panel {
+    -fx-background-color: -fx-primary-color; /* Azul oscuro arriba */
+}
+
+.dialog-pane .header-panel .label {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+/* El texto del cuerpo */
+.dialog-pane .content {
+    -fx-text-fill: -fx-text-light;
+    -fx-font-size: 14px;
+}
+
+.dialog-pane .label {
+    -fx-text-fill: -fx-text-light;
+}
+
+/* Botones de la alerta */
+.dialog-pane .button {
+    -fx-background-color: -fx-primary-color;
+    -fx-text-fill: white;
+    -fx-background-radius: 5;
+    -fx-cursor: hand;
+}
+
+.dialog-pane .button:hover {
+    -fx-background-color: -fx-accent-color;
+    -fx-text-fill: -fx-primary-color;
+}
+
+/* Que el CheckBox se vea con color intenso incluso deshabilitado */
+.check-box:disabled {
+    -fx-opacity: 1.0;
+}
+
+/* Pero el cuadradito (box) sí que se vea gris para indicar que no se puede tocar */
+.check-box:disabled > .box {
+    -fx-background-color: #536e8a;
+    -fx-opacity: 0.5;
+}
+
+/* --- FILAS DE TABLA INACTIVAS --- */
+
+.table-row-cell.row-inactive {
+    -fx-opacity: 0.5; /* Se ve al 50% de intensidad (Efecto "Deshabilitado") */
+    -fx-background-color: #16202b; /* Fondo muy oscuro para que no destaque */
+}
+
+/* Aseguramos que el texto siga siendo legible aunque esté apagado */
+.table-row-cell.row-inactive .table-cell {
+    -fx-text-fill: #95a5a6; /* Gris en lugar de blanco brillante */
+}
+
+/* Si la seleccionamos, recuperamos un poco el color para saber cuál es */
+.table-row-cell.row-inactive:selected {
+    -fx-opacity: 0.8;
+}

@@ -12,6 +12,7 @@ module org.dam.fcojavier.substracker {
     requires com.almasb.fxgl.all;
     requires jbcrypt;
     requires java.sql;
+    requires java.desktop;
 
     opens org.dam.fcojavier.substracker to javafx.fxml;
     opens org.dam.fcojavier.substracker.controller to javafx.fxml;

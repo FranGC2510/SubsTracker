@@ -31,53 +31,71 @@
             <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
         </padding>
 
-        <VBox spacing="25.0" minWidth="380.0" maxWidth="450.0">
+        <VBox spacing="10.0" minWidth="380.0" maxWidth="450.0">
 
-            <VBox spacing="15.0" styleClass="card-pane">
-                <Label styleClass="subtitle-label" style="-fx-font-size: 16px;" text="FICHA DEL SERVICIO" />
+            <VBox spacing="6.0" styleClass="card-pane">
 
-                <VBox spacing="5.0">
-                    <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 13px; -fx-font-weight: bold;" text="NOMBRE" />
+                <padding>
+                    <Insets top="15.0" right="25.0" bottom="5.0" left="25.0" />
+                </padding>
+
+                <Label styleClass="subtitle-label" style="-fx-font-size: 15px;" text="FICHA DEL SERVICIO" />
+
+                <VBox spacing="2.0">
+                    <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 12px; -fx-font-weight: bold;" text="NOMBRE" />
                     <TextField fx:id="txtNombre" disable="true" />
                 </VBox>
 
-                <VBox spacing="5.0">
-                    <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 13px; -fx-font-weight: bold;" text="PRECIO (€)" />
+                <VBox spacing="2.0">
+                    <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 12px; -fx-font-weight: bold;" text="PRECIO (€)" />
                     <TextField fx:id="txtPrecio" disable="true" />
                 </VBox>
 
-                <HBox spacing="15.0">
-                    <VBox spacing="5.0" HBox.hgrow="ALWAYS">
-                        <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 13px; -fx-font-weight: bold;" text="CICLO" />
+                <HBox spacing="10.0">
+                    <VBox spacing="2.0" HBox.hgrow="ALWAYS">
+                        <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 12px; -fx-font-weight: bold;" text="CICLO" />
                         <ComboBox fx:id="comboCiclo" disable="true" maxWidth="Infinity" />
                     </VBox>
-                    <VBox spacing="5.0" HBox.hgrow="ALWAYS">
-                        <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 13px; -fx-font-weight: bold;" text="CATEGORÍA" />
+                    <VBox spacing="2.0" HBox.hgrow="ALWAYS">
+                        <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 12px; -fx-font-weight: bold;" text="CATEGORÍA" />
                         <ComboBox fx:id="comboCategoria" disable="true" maxWidth="Infinity" />
                     </VBox>
                 </HBox>
 
                 <Separator opacity="0.1" />
 
-                <HBox spacing="15.0">
-                    <VBox spacing="5.0" HBox.hgrow="ALWAYS">
-                        <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 13px; -fx-font-weight: bold;" text="ACTIVACIÓN" />
+                <HBox spacing="10.0">
+                    <VBox spacing="2.0" HBox.hgrow="ALWAYS">
+                        <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 12px; -fx-font-weight: bold;" text="ACTIVACIÓN" />
                         <DatePicker fx:id="dpFechaActivacion" disable="true" maxWidth="Infinity" />
                     </VBox>
-                    <VBox spacing="5.0" HBox.hgrow="ALWAYS">
-                        <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 13px; -fx-font-weight: bold;" text="RENOVACIÓN" />
+                    <VBox spacing="2.0" HBox.hgrow="ALWAYS">
+                        <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 12px; -fx-font-weight: bold;" text="RENOVACIÓN" />
                         <DatePicker fx:id="dpFechaRenovacion" disable="true" maxWidth="Infinity" />
                     </VBox>
                 </HBox>
-                <Label fx:id="lblError" styleClass="error-label" visible="false" />
+
+                <Separator opacity="0.1" />
+
+                <VBox spacing="2.0">
+                    <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 12px; -fx-font-weight: bold;" text="ESTADO" />
+                    <CheckBox fx:id="chkActivo" disable="true" maxWidth="Infinity"
+                              style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: white; -fx-cursor: hand;"
+                              text="ACTIVA" />
+                </VBox>
+
+                <Label fx:id="lblError" managed="${lblError.visible}" styleClass="error-label" visible="false" />
             </VBox>
 
-            <VBox styleClass="card-pane" alignment="CENTER_LEFT" spacing="10.0" style="-fx-background-color: -fx-primary-color; -fx-border-color: #536e8a; -fx-border-width: 1;">
+            <VBox styleClass="card-pane" alignment="CENTER_LEFT" spacing="5.0" style="-fx-background-color: -fx-primary-color; -fx-border-color: #536e8a; -fx-border-width: 1;">
+                <padding>
+                    <Insets top="15.0" right="20.0" bottom="15.0" left="20.0" />
+                </padding>
 
                 <VBox spacing="0">
-                    <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 11px; -fx-font-weight: bold;" text="MI GASTO ACUMULADO (NETO)" />
+                    <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 14px; -fx-font-weight: bold;" text="MI GASTO ACUMULADO (NETO)" />
                     <HBox alignment="BASELINE_LEFT" spacing="10.0">
-                        <Label fx:id="lblGastoNeto" style="-fx-font-size: 38; -fx-font-weight: bold; -fx-text-fill: -fx-accent-color;" text="0.00 €" />
+                        <Label fx:id="lblGastoNeto" style="-fx-font-size: 34; -fx-font-weight: bold; -fx-text-fill: -fx-accent-color;" text="0.00 €" />
                         <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 14;" text="real" />
                     </HBox>
                 </VBox>
@@ -85,14 +103,14 @@
                 <Separator opacity="0.2" />
 
                 <VBox spacing="0">
-                    <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 11px; -fx-font-weight: bold;" text="COSTE TOTAL DEL SERVICIO" />
+                    <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 14px; -fx-font-weight: bold;" text="COSTE TOTAL DEL SERVICIO" />
                     <HBox alignment="BASELINE_LEFT" spacing="10.0">
-                        <Label fx:id="lblGastoBruto" style="-fx-font-size: 30; -fx-font-weight: bold; -fx-text-fill: #bdc3c7;" text="0.00 €" />
-                        <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 14;" text="sin descuentos" />
+                        <Label fx:id="lblGastoBruto" style="-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: #bdc3c7;" text="0.00 €" />
+                        <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 12;" text="sin descuentos" />
                     </HBox>
                 </VBox>
 
-                <Label fx:id="lblFechaInicioEstadistica" style="-fx-text-fill: -fx-text-muted; -fx-font-size: 14px; -fx-font-style: italic;" text="Calculado desde el inicio del contrato" />
+                <Label fx:id="lblFechaInicioEstadistica" style="-fx-text-fill: -fx-text-muted; -fx-font-size: 13px; -fx-font-style: italic;" text="Calculado desde el inicio del contrato" />
             </VBox>
 
         </VBox>
