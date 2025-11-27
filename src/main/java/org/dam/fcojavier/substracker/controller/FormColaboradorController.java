@@ -42,7 +42,9 @@ public class FormColaboradorController {
 
     private Suscripcion suscripcionActual;
     private ParticipaDAO participaDAO;
+
     private boolean guardado = false;
+
     private Participa participaEditando;
 
     /**
@@ -136,8 +138,12 @@ public class FormColaboradorController {
         if (!Validaciones.esTextoValido(nombre)) { mostrarError("Falta nombre"); return; }
 
         double importe = 0;
-        try { importe = Double.parseDouble(importeStr.replace(",", ".")); }
-        catch (Exception e) { mostrarError("Importe mal"); return; }
+        try {
+            importe = Double.parseDouble(importeStr.replace(",", "."));
+        } catch (Exception e) {
+            mostrarError("Importe mal");
+            return;
+        }
 
         LocalDate fechaFinal = chkPagado.isSelected() ? dpFechaPago.getValue() : null;
         int periodos = chkPagado.isSelected() ? spinnerPeriodos.getValue() : 1;
@@ -151,6 +157,13 @@ public class FormColaboradorController {
             else mostrarError("Error al crear.");
 
         } else {
+            if (participaEditando.getParticipante() == null) {
+                participaEditando.setNombreInvitado(nombre);
+            }
+
+            participaEditando.setCantidadApagar(importe);
+            participaEditando.setDescripcion(descripcion);
+            participaEditando.setMetodo_pago(comboMetodo.getValue());
             participaEditando.setFecha_pagado(fechaFinal);
             participaEditando.setPeriodos_cubiertos(periodos);
 

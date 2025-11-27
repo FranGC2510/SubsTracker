@@ -34,6 +34,7 @@ public class FormSuscripcionController {
 
     private Usuario usuarioTitular;
     private SuscripcionDAO suscripcionDAO;
+
     private boolean guardadoExitoso = false;
 
     /**
@@ -95,7 +96,6 @@ public class FormSuscripcionController {
         LocalDate fechaActivacion = dpFechaActivacion.getValue();
         LocalDate fechaPrimerPago = dpFechaInicio.getValue();
 
-
         if (!Validaciones.esTextoValido(nombre)) {
             mostrarError("El nombre del servicio es obligatorio.");
             return;
@@ -133,7 +133,6 @@ public class FormSuscripcionController {
         }
 
         LocalDate fechaRenovacion = fechaPrimerPago;
-
         LocalDate hoy = LocalDate.now();
 
         while (fechaRenovacion.isBefore(hoy)) {

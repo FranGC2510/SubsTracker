@@ -11,6 +11,16 @@ import org.dam.fcojavier.substracker.model.Suscripcion;
 
 import java.time.LocalDate;
 
+/**
+ * Controlador para la ventana modal de registro de pagos (Cobros).
+ *
+ * Esta clase permite al usuario titular registrar un pago realizado a una suscripción.
+ * Además de guardar el registro histórico, contiene la lógica de negocio para
+ * avanzar automáticamente la fecha de próxima renovación de la suscripción.
+ *
+ * @author Fco Javier García
+ * @version 1.0
+ */
 public class FormCobroController {
     @FXML private Label lblNombreSuscripcion;
     @FXML private DatePicker dpFecha;
@@ -22,8 +32,15 @@ public class FormCobroController {
     private Suscripcion suscripcionActual;
     private CobroDAO cobroDAO;
     private SuscripcionDAO suscripcionDAO;
+
     private boolean guardadoExitoso = false;
 
+    /**
+     * Inicializa el controlador y configura los componentes.
+     *
+     * Se ejecuta automáticamente tras cargar el FXML.
+     * Configura los DAOs, carga los métodos de pago y establece valores por defecto (Fecha hoy, 1 periodo).
+     */
     public void initialize() {
         cobroDAO = new CobroDAO();
         suscripcionDAO = new SuscripcionDAO();
@@ -35,11 +52,29 @@ public class FormCobroController {
         spinnerPeriodos.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 24, 1));
     }
 
+    /**
+     * Recibe la suscripción sobre la que se va a realizar el pago.
+     *
+     * Actualiza la etiqueta de título con el nombre y precio para dar contexto al usuario.
+     *
+     * @param sub Objeto suscripción seleccionado en la tabla principal.
+     */
     public void setSuscripcion(Suscripcion sub) {
         this.suscripcionActual = sub;
-        lblNombreSuscripcion.setText(sub.getNombre() + " (" + sub.getPrecio() + " €)");
+        if (sub != null) {
+            lblNombreSuscripcion.setText(sub.getNombre() + " (" + sub.getPrecio() + " €)");
+        }
     }
 
+    /**
+     * Acción del botón "Confirmar Pago".
+     *
+     * Realiza el proceso transaccional:
+     * Valida la fecha.
+     * Crea y guarda el objeto {@link Cobro} en el historial.
+     * Si el guardado es correcto, llama a {@link #actualizarFechaRenovacionSuscripcion()} para avanzar la fecha.
+     * Cierra la ventana.
+     */
     @FXML
     private void guardar() {
         if (dpFecha.getValue() == null) {
@@ -55,9 +90,7 @@ public class FormCobroController {
         nuevoCobro.setDescripcion(txtDescripcion.getText());
 
         if (cobroDAO.create(nuevoCobro)) {
-
             actualizarFechaRenovacionSuscripcion();
-
             guardadoExitoso = true;
             cerrar();
         } else {
@@ -66,7 +99,11 @@ public class FormCobroController {
     }
 
     /**
-     * Avanza la fecha de renovación de la suscripción según los periodos pagados.
+     * Lógica de negocio para actualizar la próxima fecha de pago.
+     *
+     * Calcula la nueva fecha sumando los periodos pagados a la fecha de renovación actual,
+     * basándose en el ciclo de la suscripción (Mensual, Trimestral, Anual).
+     * Finalmente actualiza la suscripción en la base de datos.
      */
     private void actualizarFechaRenovacionSuscripcion() {
         int periodos = spinnerPeriodos.getValue();
@@ -84,15 +121,26 @@ public class FormCobroController {
         System.out.println("Suscripción renovada hasta: " + nuevaRenovacion);
     }
 
+    /**
+     * Cierra la ventana modal actual.
+     */
     @FXML private void cerrar() {
         ((Stage) lblNombreSuscripcion.getScene().getWindow()).close();
     }
 
+    /**
+     * Muestra un mensaje de error visual en el formulario.
+     * @param msg Texto del error.
+     */
     private void mostrarError(String msg) {
         lblError.setText(msg);
         lblError.setVisible(true);
     }
 
+    /**
+     * Consulta para la ventana padre.
+     * @return true si se registró el pago correctamente (para refrescar la tabla).
+     */
     public boolean isGuardadoExitoso() { return guardadoExitoso; }
 }
 

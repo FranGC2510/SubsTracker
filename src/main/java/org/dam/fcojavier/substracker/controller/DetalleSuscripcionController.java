@@ -57,15 +57,17 @@ public class DetalleSuscripcionController {
 
     private MainController mainController;
     private Usuario usuarioLogueado;
-
     private Suscripcion suscripcionActual;
+
     private SuscripcionDAO suscripcionDAO;
     private ParticipaDAO participaDAO;
+
     private boolean huboCambios = false;
     private boolean modoEdicion = false;
 
     /**
-     * Constructor por defecto. Inicializa los DAOs.
+     * Constructor por defecto.
+     * Inicializa las instancias de los DAOs para el acceso a datos.
      */
     public DetalleSuscripcionController() {
         this.suscripcionDAO = new SuscripcionDAO();
@@ -74,7 +76,11 @@ public class DetalleSuscripcionController {
 
     /**
      * Configuración inicial de los componentes visuales.
-     * Carga los valores de los enumerados en los ComboBoxes.
+     *
+     * Se ejecuta automáticamente tras cargar el FXML.
+     * Carga los valores de los enumerados en los ComboBoxes y añade un listener
+     * para cambiar visualmente el estado del CheckBox (Activo/Pausado).
+     *
      */
     @FXML
     public void initialize() {
@@ -114,6 +120,10 @@ public class DetalleSuscripcionController {
         cargarParticipantes();
     }
 
+    /**
+     * Actualiza el estilo visual del CheckBox de estado.
+     * @param activo true para verde (Activa), false para rojo (Pausada).
+     */
     private void actualizarEstiloEstado(boolean activo) {
         if (activo) {
             chkActivo.setText("SUSCRIPCIÓN ACTIVA");
@@ -127,8 +137,9 @@ public class DetalleSuscripcionController {
     /**
      * Carga la lista de colaboradores desde la base de datos y genera las tarjetas visuales.
      *
-     * Utiliza un {@link VBox} dinámico para insertar una tarjeta {@code itemColaborador.fxml}
-     * por cada registro encontrado.
+     * Consulta al DAO y, si hay colaboradores, crea dinámicamente instancias de {@code itemColaborador.fxml}.
+     * Si no hay, muestra el panel de "Sin colaboradores".
+     *
      */
     private void cargarParticipantes() {
         if (suscripcionActual != null) {
@@ -165,6 +176,8 @@ public class DetalleSuscripcionController {
 
     /**
      * Abre la ventana modal para editar un colaborador existente.
+     *
+     * @param participaAEditar El objeto {@link Participa} seleccionado en la lista.
      */
     private void abrirModalEditarColaborador(Participa participaAEditar) {
         try {
@@ -234,6 +247,9 @@ public class DetalleSuscripcionController {
 
     /**
      * Navega de vuelta a la lista principal de suscripciones.
+     * Se ejecuta al pulsar el botón de retroceso.
+     *
+     * @param event Evento del botón.
      */
     @FXML
     private void volverAtras(ActionEvent event) {
@@ -244,7 +260,11 @@ public class DetalleSuscripcionController {
 
     /**
      * Alterna entre el modo "Solo Lectura" y "Edición".
-     * Si ya está en edición, guarda los cambios.
+     *
+     * Si está en modo lectura, habilita los campos.
+     * Si está en modo edición, llama a {@link #guardarCambios()}.
+     *
+     * @param event Evento del botón.
      */
     @FXML
     private void toggleEdicion(ActionEvent event) {
@@ -259,7 +279,10 @@ public class DetalleSuscripcionController {
     }
 
     /**
-     * Recoge los datos del formulario, valida y actualiza la suscripción en la BD.
+     * Recoge los datos del formulario, valida la entrada y persiste los cambios en la BD.
+     *
+     * Si la actualización es exitosa, vuelve al modo de solo lectura.
+     *
      */
     private void guardarCambios() {
         String nombre = txtNombre.getText();
@@ -295,8 +318,10 @@ public class DetalleSuscripcionController {
     }
 
     /**
-     * Elimina la suscripción actual tras confirmación.
-     * Si tiene éxito, vuelve a la lista automáticamente.
+     * Elimina la suscripción actual tras confirmación del usuario.
+     * Si tiene éxito, navega automáticamente a la lista principal.
+     *
+     * @param event Evento del botón.
      */
     @FXML
     private void eliminarSuscripcion(ActionEvent event) {
@@ -318,6 +343,12 @@ public class DetalleSuscripcionController {
         }
     }
 
+    /**
+     * Habilita o deshabilita los controles del formulario.
+     * Utilizado para alternar entre el modo de solo lectura y el modo edición.
+     *
+     * @param habilitar true para permitir la edición, false para bloquear los campos.
+     */
     private void habilitarCampos(boolean habilitar) {
         boolean estado = !habilitar;
         txtNombre.setDisable(estado);
@@ -329,23 +360,28 @@ public class DetalleSuscripcionController {
         chkActivo.setDisable(estado);
     }
 
-    @FXML
-    private void cerrarVentana() {
-        Stage stage = (Stage) txtNombre.getScene().getWindow();
-        stage.close();
-    }
-
+    /**
+     * Muestra un mensaje de error en la etiqueta inferior del formulario.
+     *
+     * @param msg El mensaje de texto a mostrar.
+     */
     private void mostrarError(String msg) {
         lblError.setText(msg);
         lblError.setVisible(true);
     }
 
+    /**
+     * Permite al controlador principal saber si hubo cambios en los datos.
+     * @return true si se realizó alguna modificación.
+     */
     public boolean huboCambios() {
         return huboCambios;
     }
 
     /**
-     * Abre el modal para añadir un nuevo colaborador.
+     * Abre el modal para añadir un nuevo colaborador a la suscripción actual.
+     *
+     * @param event Evento del botón.
      */
     @FXML
     private void abrirModalColaborador(ActionEvent event) {
