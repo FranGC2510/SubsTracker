@@ -537,3 +537,39 @@
 .table-row-cell.row-inactive:selected {
     -fx-opacity: 0.8;
 }
+
+/* --- GRÁFICO DE BARRAS (BARCHART) --- */
+
+.chart-plot-background {
+    -fx-background-color: transparent;
+}
+
+/* Color de las barras */
+.default-color0.chart-bar {
+    -fx-bar-fill: -fx-accent-color; /* Turquesa */
+    -fx-background-radius: 5 5 0 0; /* Bordes redondeados arriba */
+}
+
+/* Ejes y Texto */
+.axis {
+    -fx-tick-label-fill: -fx-text-muted;
+    -fx-font-size: 11px;
+}
+
+.axis:left {
+    -fx-border-color: transparent;
+}
+
+.axis:bottom {
+    -fx-border-color: transparent;
+}
+
+/* Títulos de los ejes */
+.axis-label {
+    -fx-text-fill: -fx-text-muted;
+}
+
+/* Líneas de la cuadrícula */
+.chart-horizontal-grid-lines {
+    -fx-stroke: rgba(255, 255, 255, 0.05);
+}

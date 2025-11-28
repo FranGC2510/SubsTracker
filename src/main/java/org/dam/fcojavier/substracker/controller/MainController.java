@@ -33,8 +33,7 @@ public class MainController {
 
     @FXML
     public void mostrarEstadisticas(ActionEvent event) {
-        System.out.println("Navegando a Estadísticas...");
-        // cargarVista("statsView.fxml");
+        mostrarEstadisticas();
     }
 
     @FXML
@@ -83,6 +82,27 @@ public class MainController {
             contentArea.getChildren().add(view);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * Acción del botón "Informes y Gastos".
+     * Carga la vista de estadísticas.
+     */
+    @FXML
+    public void mostrarEstadisticas() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/dam/fcojavier/substracker/view/informesView.fxml"));
+            Parent view = loader.load();
+
+            InformesController controller = loader.getController();
+            controller.initData(this.usuarioLogueado);
+
+            contentArea.getChildren().clear();
+            contentArea.getChildren().add(view);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Error cargando la vista de estadísticas.");
         }
     }
 }
