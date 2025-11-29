@@ -13,10 +13,20 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import javafx.scene.Node;
 import org.dam.fcojavier.substracker.model.Usuario;
+import org.dam.fcojavier.substracker.utils.Dialogos;
 import org.dam.fcojavier.substracker.utils.Validaciones;
 
 import java.io.IOException;
 
+/**
+ * Controlador de la pantalla de Registro de nuevos usuarios.
+ *
+ * Gestiona el formulario de alta, validando la integridad de los datos,
+ * la seguridad de la contraseña y la unicidad del correo electrónico.
+ *
+ * @author Fco Javier García
+ * @version 2.0
+ */
 public class RegistroController {
 
     @FXML private TextField txtNombre;
@@ -28,10 +38,23 @@ public class RegistroController {
 
     private final UsuarioDAO usuarioDAO;
 
+    /**
+     * Constructor por defecto. Inicializa el DAO.
+     */
     public RegistroController() {
         this.usuarioDAO = new UsuarioDAO();
     }
 
+    /**
+     * Maneja el evento de registro.
+     *
+     * Flujo de validación estricto:
+     * Campos vacíos.
+     * Coincidencia de contraseñas.
+     * Formato de email y longitud de contraseña.
+     * Duplicidad de email en BD.
+     * Persistencia.
+     */
     @FXML
     private void handleRegistro(ActionEvent event) {
         limpiarEstilos();
@@ -100,28 +123,53 @@ public class RegistroController {
         Usuario nuevoUsuario = new Usuario(0, nombre, apellidos, email, password);
 
         if (usuarioDAO.create(nuevoUsuario)) {
-            System.out.println("Usuario registrado: " + nuevoUsuario.getNombre());
-
-            mostrarLogin(event);
+            irAlDashboard(nuevoUsuario);
         } else {
             mostrarError("Error al guardar en la base de datos.");
         }
     }
 
-    @FXML
-    private void volverLogin(ActionEvent event) {
-        mostrarLogin(event);
+    /**
+     * Carga y muestra el Dashboard principal con el usuario recién creado.
+     * Reutiliza la lógica de navegación del LoginController.
+     *
+     * @param usuario El usuario registrado y autenticado.
+     */
+    private void irAlDashboard(Usuario usuario) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/dam/fcojavier/substracker/view/mainView.fxml"));
+            Parent root = loader.load();
+
+            MainController mainController = loader.getController();
+            mainController.setUsuario(usuario);
+
+            Stage stage = (Stage) txtNombre.getScene().getWindow();
+
+            stage.setResizable(true);
+            stage.setMinWidth(1000);
+            stage.setMinHeight(700);
+
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setTitle("SubTracker - Dashboard de " + usuario.getNombre());
+
+            stage.centerOnScreen();
+            stage.setMaximized(true);
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            Dialogos.mostrarError("Error de Navegación", "No se pudo cargar el Dashboard.", null);
+        }
     }
 
-    // Método auxiliar para cambiar de escena
-
-    private void mostrarLogin(ActionEvent event) {
+    @FXML
+    private void volverLogin(ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/dam/fcojavier/substracker/view/loginView.fxml"));
             Parent root = loader.load();
 
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-
             Scene scene = new Scene(root, 800, 600);
 
             stage.setScene(scene);
@@ -131,6 +179,8 @@ public class RegistroController {
             e.printStackTrace();
         }
     }
+
+    // Métodos auxiliares
 
     private void limpiarEstilos() {
         lblError.setVisible(false);

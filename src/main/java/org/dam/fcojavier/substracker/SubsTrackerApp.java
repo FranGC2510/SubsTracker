@@ -14,7 +14,7 @@ public class SubsTrackerApp extends Application {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/dam/fcojavier/substracker/view/loginView.fxml"));
         Parent root = loader.load();
 
-        Scene scene = new Scene(root, 800, 600);
+        Scene scene = new Scene(root, 750, 600);
 
         stage.setTitle("SubTracker - Iniciar Sesión");
         stage.setScene(scene);

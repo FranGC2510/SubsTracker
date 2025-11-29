@@ -573,3 +573,48 @@
 .chart-horizontal-grid-lines {
     -fx-stroke: rgba(255, 255, 255, 0.05);
 }
+
+/* --- MENÚ LATERAL (SIDEBAR) --- */
+
+/* Contenedor del Avatar */
+.avatar-circle {
+    -fx-fill: -fx-secondary-color; /* Fondo del círculo */
+    -fx-stroke: -fx-accent-color;  /* Borde turquesa */
+    -fx-stroke-width: 2px;
+}
+
+/* Botones del Menú (Transparentes y elegantes) */
+.menu-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: -fx-text-muted; /* Gris claro por defecto */
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-alignment: BASELINE_LEFT; /* Texto a la izquierda */
+    -fx-padding: 12 20; /* Espaciado interno cómodo */
+    -fx-cursor: hand;
+    -fx-background-radius: 0 20 20 0; /* Bordes redondeados solo a la derecha */
+}
+
+.menu-button:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.05); /* Brillo sutil */
+    -fx-text-fill: white; /* Texto blanco brillante */
+    -fx-border-color: -fx-accent-color;
+    -fx-border-width: 0 0 0 4; /* Línea turquesa a la izquierda al pasar el ratón */
+}
+
+/* Botón de Cerrar Sesión (Abajo) */
+.logout-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #e74c3c; /* Rojo */
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-border-color: #e74c3c;
+    -fx-border-width: 1;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+}
+
+.logout-button:hover {
+    -fx-background-color: #e74c3c;
+    -fx-text-fill: white;
+}

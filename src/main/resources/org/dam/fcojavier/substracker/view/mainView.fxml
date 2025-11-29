@@ -7,36 +7,58 @@
 <?import javafx.scene.layout.*?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.shape.Circle?>
 <BorderPane fx:id="mainContainer" prefHeight="700.0" prefWidth="1000.0"
+            styleClass="background-pane"
             stylesheets="@style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="org.dam.fcojavier.substracker.controller.MainController">
 
     <left>
-        <VBox prefWidth="250.0" spacing="10.0" style="-fx-background-color: -fx-secondary-color;">
+        <VBox prefWidth="260.0" spacing="0.0" style="-fx-background-color: #16202b; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 10, 0, 0, 0);">
+
             <padding>
-                <Insets bottom="20.0" left="20.0" right="20.0" top="30.0" />
+                <Insets bottom="20.0" left="0.0" right="0.0" top="30.0" />
             </padding>
 
-            <Label styleClass="title-label" text="SubTracker" />
-            <Separator opacity="0.3" />
-
-            <VBox spacing="5.0">
-                <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 12;" text="Bienvenido," />
-                <Label fx:id="lblNombreUsuario" style="-fx-text-fill: -fx-accent-color; -fx-font-size: 16; -fx-font-weight: bold;" text="Usuario" />
+            <VBox alignment="CENTER" spacing="10.0">
+                <ImageView fitWidth="180.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@/logo.png" />
+                    </image>
+                </ImageView>
             </VBox>
 
-            <Separator opacity="0.3">
-                <VBox.margin>
-                    <Insets bottom="20.0" />
-                </VBox.margin></Separator>
+            <Separator opacity="0.0" prefHeight="30.0" />
 
-            <Button maxWidth="1.7976931348623157E308" onAction="#mostrarSuscripciones" styleClass="button-primary" text="Mis Suscripciones" />
-            <Button maxWidth="1.7976931348623157E308" onAction="#mostrarEstadisticas" styleClass="button-primary" text="Informes y Gastos" />
-            <Button maxWidth="1.7976931348623157E308" disable="true" styleClass="button-primary" text="Configuración" />
+            <HBox alignment="CENTER_LEFT" spacing="15.0" style="-fx-padding: 0 20 20 20;">
+                <StackPane>
+                    <Circle radius="22.0" styleClass="avatar-circle" />
+                    <Label fx:id="lblIniciales" style="-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16;" text="US" />
+                </StackPane>
+
+                <VBox alignment="CENTER_LEFT">
+                    <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 11;" text="BIENVENIDO" />
+                    <Label fx:id="lblNombreUsuario" style="-fx-text-fill: white; -fx-font-size: 15; -fx-font-weight: bold;" text="Usuario" />
+                </VBox>
+            </HBox>
+
+            <Separator opacity="0.1" style="-fx-padding: 0 20 0 20;" />
+            <Separator opacity="0.0" prefHeight="20.0" />
+
+            <VBox spacing="10.0" style="-fx-padding: 0 15 0 15;">
+                <Button maxWidth="Infinity" onAction="#mostrarSuscripciones" styleClass="button-primary" text="Mis Suscripciones" />
+                <Button maxWidth="Infinity" onAction="#mostarEstadisticas" styleClass="button-primary" text="Informes y Gastos" />
+                <Button maxWidth="Infinity" disable="true" styleClass="button-primary" text="Configuración" />
+            </VBox>
 
             <VBox VBox.vgrow="ALWAYS" />
 
-            <Button maxWidth="1.7976931348623157E308" onAction="#cerrarSesion" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-cursor: hand;" text="Cerrar Sesión" />
+            <VBox style="-fx-padding: 20;">
+                <Button maxWidth="Infinity" onAction="#cerrarSesion" styleClass="logout-button" text="Cerrar Sesión" />
+            </VBox>
+
         </VBox>
     </left>
 

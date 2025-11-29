@@ -17,7 +17,7 @@
     <HBox alignment="CENTER_LEFT" spacing="15.0" style="-fx-background-color: -fx-primary-color; -fx-background-radius: 9 9 0 0; -fx-padding: 20;">
         <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
             <image>
-                <Image url="@/ic_subs.png" />
+                <Image url="@/ic_logo.png" />
             </image>
         </ImageView>
         <VBox>

@@ -14,28 +14,77 @@ import org.dam.fcojavier.substracker.model.Usuario;
 
 import java.io.IOException;
 
+/**
+ * Controlador principal de la aplicación (Dashboard / Layout Base).
+ *
+ * Esta clase actúa como el contenedor y "Enrutador" de la aplicación.
+ * Sus responsabilidades son:
+ * Gestionar la barra lateral de navegación (Menú).
+ * Mostrar la información del usuario logueado (Avatar e Iniciales).
+ * Cargar dinámicamente las vistas (Suscripciones, Estadísticas, Detalles) en el área central.
+ * Gestionar el cierre de sesión y el retorno al Login.
+ *
+ * @author Fco Javier García
+ * @version 2.0
+ */
 public class MainController {
     @FXML private Label lblNombreUsuario;
+    @FXML private Label lblIniciales;
     @FXML private StackPane contentArea;
 
     private Usuario usuarioLogueado;
 
-    // Este método lo llamaremos desde el LoginController para pasarle los datos
+    /**
+     * Configura la sesión del usuario al entrar al Dashboard.
+     *
+     * Este método es llamado desde el Login. Se encarga de:
+     * 1. Guardar el usuario en memoria.
+     * 2. Actualizar la interfaz (Nombre y Avatar).
+     * 3. Cargar la vista por defecto (Lista de Suscripciones).
+     *
+     * @param usuario El usuario autenticado.
+     */
     public void setUsuario(Usuario usuario) {
         this.usuarioLogueado = usuario;
         lblNombreUsuario.setText(usuario.getNombre());
+
+        String textoIniciales = "";
+
+        if (usuario.getNombre() != null && !usuario.getNombre().isEmpty()) {
+            String nombre = usuario.getNombre();
+            if (nombre.length() >= 2) {
+                textoIniciales = nombre.substring(0, 2);
+            } else {
+
+                textoIniciales = nombre;
+            }
+        }
+
+        lblIniciales.setText(textoIniciales.toUpperCase());
+        cargarVistaSuscripciones();
     }
 
+    /**
+     * Acción del botón del menú "Mis Suscripciones".
+     */
     @FXML
     public void mostrarSuscripciones(ActionEvent event) {
         cargarVistaSuscripciones();
     }
 
+    /**
+     * Acción del botón del menú "Informes y Gastos".
+     */
     @FXML
-    public void mostrarEstadisticas(ActionEvent event) {
-        mostrarEstadisticas();
+    public void mostarEstadisticas(ActionEvent event) {
+        cargarVistaInformes();
     }
 
+    /**
+     * Cierra la sesión actual, limpia los datos y devuelve al usuario a la pantalla de Login.
+     *
+     * @param event Evento del botón (necesario para obtener el Stage).
+     */
     @FXML
     public void cerrarSesion(ActionEvent event) {
         try {
@@ -53,7 +102,10 @@ public class MainController {
         }
     }
 
-    // Método auxiliar público para volver desde el detalle
+    /**
+     * Carga la tabla de suscripciones en el área central.
+     * Inyecta este controlador ({@code this}) al hijo para permitir navegación futura.
+     */
     public void cargarVistaSuscripciones() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/dam/fcojavier/substracker/view/suscripcionesView.fxml"));
@@ -62,14 +114,18 @@ public class MainController {
             SuscripcionesController controller = loader.getController();
             controller.initData(this.usuarioLogueado, this);
 
-            contentArea.getChildren().clear();
-            contentArea.getChildren().add(view);
+            actualizarZonaCentral(view);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    //Método para ir al detalle
+    /**
+     * Navega a la vista de detalle de una suscripción.
+     * Método público llamado desde {@link SuscripcionesController} al hacer doble clic.
+     *
+     * @param suscripcion La suscripción seleccionada.
+     */
     public void mostrarDetalleSuscripcion(Suscripcion suscripcion) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/dam/fcojavier/substracker/view/detalleSuscripcionView.fxml"));
@@ -78,19 +134,17 @@ public class MainController {
             DetalleSuscripcionController controller = loader.getController();
             controller.initData(suscripcion, this.usuarioLogueado, this);
 
-            contentArea.getChildren().clear();
-            contentArea.getChildren().add(view);
+            actualizarZonaCentral(view);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     /**
-     * Acción del botón "Informes y Gastos".
-     * Carga la vista de estadísticas.
+     * Carga la vista de informes y estadísticas financieras.
      */
     @FXML
-    public void mostrarEstadisticas() {
+    public void cargarVistaInformes() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/dam/fcojavier/substracker/view/informesView.fxml"));
             Parent view = loader.load();
@@ -98,11 +152,43 @@ public class MainController {
             InformesController controller = loader.getController();
             controller.initData(this.usuarioLogueado);
 
-            contentArea.getChildren().clear();
-            contentArea.getChildren().add(view);
+            actualizarZonaCentral(view);
         } catch (IOException e) {
             e.printStackTrace();
             System.err.println("Error cargando la vista de estadísticas.");
+        }
+    }
+
+    //Métodos auxiliares
+
+    /**
+     * Reemplaza el contenido del área central con la nueva vista cargada.
+     *
+     * @param view El nodo raíz de la nueva vista.
+     */
+    private void actualizarZonaCentral(Parent view) {
+        contentArea.getChildren().clear();
+        contentArea.getChildren().add(view);
+    }
+
+    /**
+     * Genera las iniciales para el avatar visual a partir del nombre.
+     *
+     * Lógica: Si el nombre tiene 2 o más letras, usa las dos primeras.
+     * Si es más corto, usa lo que haya.
+     *
+     * @param nombre El nombre del usuario.
+     * @return String con las iniciales en mayúsculas.
+     */
+    private String calcularIniciales(String nombre) {
+        if (nombre == null || nombre.isEmpty()) {
+            return "";
+        }
+
+        if (nombre.length() >= 2) {
+            return nombre.substring(0, 2).toUpperCase();
+        } else {
+            return nombre.toUpperCase();
         }
     }
 }

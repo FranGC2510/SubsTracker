@@ -1,12 +1,10 @@
 package org.dam.fcojavier.substracker.controller;
 
-import javafx.animation.TranslateTransition;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 import org.dam.fcojavier.substracker.dao.UsuarioDAO;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -14,14 +12,23 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import org.dam.fcojavier.substracker.model.Usuario;
+import org.dam.fcojavier.substracker.utils.Dialogos;
 import org.dam.fcojavier.substracker.utils.PasswordUtilidades;
 import org.dam.fcojavier.substracker.utils.Validaciones;
 
 import javafx.event.ActionEvent;
-import javafx.scene.control.Alert;
 
 import java.io.IOException;
 
+/**
+ * Controlador de la pantalla de Inicio de Sesión (Login).
+ *
+ * Gestiona la autenticación de usuarios contra la base de datos.
+ * Utiliza algoritmos de hashing (BCrypt) para verificar la contraseña de forma segura.
+ *
+ * @author Fco Javier García
+ * @version 2.0
+ */
 public class LoginController {
 
     @FXML private TextField txtEmail;
@@ -31,18 +38,35 @@ public class LoginController {
 
     private final UsuarioDAO usuarioDAO;
 
+    /**
+     * Constructor por defecto.
+     * Inicializa el DAO de usuarios para realizar las consultas.
+     */
     public LoginController() {
         this.usuarioDAO = new UsuarioDAO();
     }
 
-    // El método initialize se ejecuta DESPUÉS de cargar el FXML (útil para setup inicial)
+    /**
+     * Inicialización del controlador.
+     * Se asegura de que los mensajes de error estén ocultos al arrancar.
+     */
     @FXML
     public void initialize() {
         lblError.setVisible(false);
     }
 
     /**
-     * Método que se ejecuta al pulsar el botón "ENTRAR"
+     * Maneja el evento de clic en el botón "ENTRAR".
+     *
+     * Flujo de ejecución:
+     * Limpia estilos de error previos.
+     * Valida que los campos no estén vacíos.
+     * Valida el formato del email.
+     * Consulta la BD para obtener el usuario (y su hash).
+     * Verifica la contraseña usando BCrypt.
+     * Si es correcto, navega al Dashboard.
+     *
+     * @param event Evento del botón.
      */
     @FXML
     private void handleLogin(ActionEvent event) {
@@ -68,13 +92,19 @@ public class LoginController {
             return;
         }
 
-        // 3. Validar formato de email
         if (!Validaciones.esEmailValido(email)) {
             marcarCampoError(txtEmail);
             mostrarMensajeError("El formato del email no es correcto.");
             return;
         }
 
+        intentarLogin(email, password);
+    }
+
+    /**
+     * Realiza la comprobación de credenciales contra la base de datos.
+     */
+    private void intentarLogin(String email, String password) {
         Usuario usuarioEncontrado = usuarioDAO.findByEmail(email);
 
         if (usuarioEncontrado != null) {
@@ -87,10 +117,46 @@ public class LoginController {
             }
         } else {
             marcarCampoError(txtEmail);
-            mostrarMensajeError("No existe cuenta con ese email.");
+            mostrarMensajeError("No existe ninguna cuenta con ese email.");
         }
     }
 
+    /**
+     * Transición a la pantalla principal (Dashboard) tras un login exitoso.
+     *
+     * @param usuario El usuario autenticado que se pasará al MainController.
+     */
+    private void loginExitoso(Usuario usuario) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/dam/fcojavier/substracker/view/mainView.fxml"));
+            Parent root = loader.load();
+
+            MainController mainController = loader.getController();
+            mainController.setUsuario(usuario);
+
+            Stage stage = (Stage) txtEmail.getScene().getWindow();
+
+            stage.setResizable(true);
+            stage.setMinWidth(1000);
+            stage.setMinHeight(700);
+
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setTitle("SubTracker - Dashboard de " + usuario.getNombre());
+
+            stage.centerOnScreen();
+            stage.setMaximized(true);
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            Dialogos.mostrarError("Error Crítico", "No se pudo cargar el Dashboard.", null);
+        }
+    }
+
+    /**
+     * Navega a la vista de registro.
+     */
     @FXML
     private void irARegistro(ActionEvent event) {
         try {
@@ -98,7 +164,7 @@ public class LoginController {
             Parent root = loader.load();
 
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root, 800, 600);
+            Scene scene = new Scene(root, 750, 700);
 
             stage.setScene(scene);
             stage.show();
@@ -125,33 +191,5 @@ public class LoginController {
     private void mostrarMensajeError(String mensaje) {
         lblError.setText(mensaje);
         lblError.setVisible(true);
-    }
-
-    private void loginExitoso(Usuario usuario) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/dam/fcojavier/substracker/view/mainView.fxml"));
-            Parent root = loader.load();
-
-            MainController mainController = loader.getController();
-            mainController.setUsuario(usuario);
-
-            Stage stage = (Stage) txtEmail.getScene().getWindow();
-
-            stage.setResizable(true);
-
-            stage.setMinWidth(1000);
-            stage.setMinHeight(700);
-
-            Scene scene = new Scene(root);
-
-            stage.setScene(scene);
-            stage.setTitle("SubTracker - Dashboard de " + usuario.getNombre());
-            stage.centerOnScreen();
-            stage.show();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            mostrarMensajeError("Error crítico al cargar el Dashboard.");
-        }
     }
 }

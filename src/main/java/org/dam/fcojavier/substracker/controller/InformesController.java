@@ -5,10 +5,7 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.layout.Region;
 import org.dam.fcojavier.substracker.dao.ParticipaDAO;
 import org.dam.fcojavier.substracker.dao.SuscripcionDAO;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.chart.PieChart;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -23,6 +20,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Controlador de la vista de Informes y Estadísticas Financieras.
+ *
+ * Esta clase se encarga de procesar todos los datos de suscripciones y colaboraciones
+ * para generar una "foto fija" de la salud financiera del usuario.
+ *
+ * Funcionalidades clave:
+ * Normalización de costes (todo se convierte a base mensual).
+ * Cálculo de KPIs (Gasto Neto, Ahorro por copagos, Proyección anual).
+ * Visualización gráfica de gastos por categoría (BarChart).
+ * Generación de ranking "Top 3" de servicios más costosos.
+ *
+ * @author Tu Nombre
+ * @version 2.0 (Refactorizado y Documentado)
+ */
 public class InformesController {
     @FXML private Label lblGastoMensual;
     @FXML private Label lblAhorro;
@@ -34,23 +46,40 @@ public class InformesController {
     private ParticipaDAO participaDAO;
     private Usuario usuarioLogueado;
 
+    /**
+     * Constructor por defecto. Inicializa los DAOs.
+     */
     public InformesController() {
         this.suscripcionDAO = new SuscripcionDAO();
         this.participaDAO = new ParticipaDAO();
     }
 
+    /**
+     * Punto de entrada principal. Recibe el usuario y desencadena el cálculo de estadísticas.
+     *
+     * @param usuario El usuario del cual se mostrarán los informes.
+     */
     public void initData(Usuario usuario) {
         this.usuarioLogueado = usuario;
-        calcularYMostrarDatos();
+        procesarDatosFinancieros();
     }
 
-    private void calcularYMostrarDatos() {
+    /**
+     * Motor de cálculo principal.
+     *
+     * 1. Recupera todas las suscripciones activas.
+     * 2. Itera sobre ellas normalizando precios a base mensual.
+     * 3. Acumula los totales globales, por categoría y por servicio.
+     * 4. Delega la actualización de la interfaz a métodos específicos.
+     *
+     */
+    private void procesarDatosFinancieros() {
         List<Suscripcion> misSuscripciones = suscripcionDAO.findByTitularId(usuarioLogueado.getId_usuario());
 
         double gastoMensualTotal = 0;
         double ahorroMensualTotal = 0;
-        Map<String, Double> gastoPorCategoria = new HashMap<>();
 
+        Map<String, Double> gastoPorCategoria = new HashMap<>();
         Map<Suscripcion, Double> costesMensualesMap = new HashMap<>();
 
         for (Suscripcion s : misSuscripciones) {
@@ -65,7 +94,6 @@ public class InformesController {
                 aporteColaboradoresMes += normalizarAMes(p.getCantidadApagar(), s.getCiclo());
             }
 
-            //Mi Gasto Neto Mensual
             double miGastoNetoMes = costeServicioMes - aporteColaboradoresMes;
             if (miGastoNetoMes < 0) miGastoNetoMes = 0;
 
@@ -75,29 +103,54 @@ public class InformesController {
             String catNombre = s.getCategoria().name();
             gastoPorCategoria.put(catNombre, gastoPorCategoria.getOrDefault(catNombre, 0.0) + miGastoNetoMes);
 
-            // Guardar para el Top 3
             costesMensualesMap.put(s, miGastoNetoMes);
         }
 
-        // ACTUALIZAR UI
-        lblGastoMensual.setText(String.format("%.2f €", gastoMensualTotal));
-        lblAhorro.setText(String.format("%.2f €", ahorroMensualTotal));
-        lblProyeccionAnual.setText(String.format("%.2f €", gastoMensualTotal * 12));
+        actualizarKPIs(gastoMensualTotal, ahorroMensualTotal);
+        actualizarGraficoBarras(gastoPorCategoria);
 
+        mostrarTop3(costesMensualesMap);
+    }
+
+    /**
+     * Actualiza las tarjetas numéricas superiores (Big Numbers).
+     *
+     * @param gastoMensual Gasto neto mensual total.
+     * @param ahorroMensual Ahorro total por copagos.
+     */
+    private void actualizarKPIs(double gastoMensual, double ahorroMensual) {
+        lblGastoMensual.setText(String.format("%.2f €", gastoMensual));
+        lblAhorro.setText(String.format("%.2f €", ahorroMensual));
+
+        lblProyeccionAnual.setText(String.format("%.2f €", gastoMensual * 12));
+    }
+
+    /**
+     * Genera y muestra el gráfico de barras por categoría.
+     *
+     * @param gastoPorCategoria Mapa con los totales acumulados por categoría.
+     */
+    private void actualizarGraficoBarras(Map<String, Double> gastoPorCategoria) {
         chartBarras.getData().clear();
+        chartBarras.setAnimated(true); //Anmación suave al cargar
+
         XYChart.Series<String, Number> series = new XYChart.Series<>();
-        series.setName("Gastos");
+        series.setName("Gasto Mensual");
 
         for (Map.Entry<String, Double> entry : gastoPorCategoria.entrySet()) {
             if (entry.getValue() > 0) {
                 series.getData().add(new XYChart.Data<>(entry.getKey(), entry.getValue()));
             }
         }
-        chartBarras.getData().add(series);
 
-        mostrarTop3(costesMensualesMap);
+        chartBarras.getData().add(series);
     }
 
+    /**
+     * Genera la lista visual de los 3 servicios más costosos.
+     *
+     * @param mapaCostes Mapa con el coste mensual de cada suscripción individual.
+     */
     private void mostrarTop3(Map<Suscripcion, Double> mapaCostes) {
         boxTopGastos.getChildren().clear();
 
@@ -114,34 +167,43 @@ public class InformesController {
 
         int ranking = 1;
         for (Map.Entry<Suscripcion, Double> entry : top3) {
-            Suscripcion s = entry.getKey();
-            Double coste = entry.getValue();
-
-            HBox fila = new HBox();
-            fila.setSpacing(10);
-            fila.setStyle("-fx-padding: 10; -fx-background-color: rgba(0,0,0,0.1); -fx-background-radius: 5;");
-
-            Label lblRank = new Label("#" + ranking);
-            lblRank.setStyle("-fx-text-fill: -fx-accent-color; -fx-font-weight: bold; -fx-font-size: 16;");
-
-            Label lblNombre = new Label(s.getNombre());
-            lblNombre.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14;");
-
-            Region spacer = new Region();
-            HBox.setHgrow(spacer, Priority.ALWAYS);
-
-            Label lblPrecio = new Label(String.format("%.2f €/mes", coste));
-            lblPrecio.setStyle("-fx-text-fill: -fx-text-muted;");
-
-            fila.getChildren().addAll(lblRank, lblNombre, spacer, lblPrecio);
-            boxTopGastos.getChildren().add(fila);
-
-            ranking++;
+            crearFilaRanking(ranking++, entry.getKey(), entry.getValue());
         }
     }
 
     /**
-     * Convierte cualquier precio a su equivalente mensual.
+     * Método auxiliar para crear visualmente una fila del ranking.
+     * Genera un HBox estilizado con el puesto, nombre y precio.
+     *
+     * @param ranking Posición (1, 2, 3).
+     * @param s Suscripción.
+     * @param costeMensual Coste calculado.
+     */
+    private void crearFilaRanking(int ranking, Suscripcion s, Double costeMensual) {
+        HBox fila = new HBox();
+        fila.setSpacing(10);
+        fila.setStyle("-fx-padding: 10; -fx-background-color: rgba(0,0,0,0.1); -fx-background-radius: 5; -fx-alignment: CENTER_LEFT;");
+
+
+        Label lblNombre = new Label(s.getNombre());
+        lblNombre.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14;");
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        Label lblPrecio = new Label(String.format("%.2f €/mes", costeMensual));
+        lblPrecio.setStyle("-fx-text-fill: -fx-text-muted;");
+
+        fila.getChildren().addAll(lblNombre, spacer, lblPrecio);
+        boxTopGastos.getChildren().add(fila);
+    }
+
+    /**
+     * Utilidad matemática para normalizar precios a una base mensual.
+     *
+     * @param precio El importe original.
+     * @param ciclo La frecuencia de pago.
+     * @return El importe equivalente mensual.
      */
     private double normalizarAMes(double precio, Ciclo ciclo) {
         switch (ciclo) {
