@@ -50,7 +50,7 @@
             <VBox spacing="10.0" style="-fx-padding: 0 15 0 15;">
                 <Button maxWidth="Infinity" onAction="#mostrarSuscripciones" styleClass="button-primary" text="Mis Suscripciones" />
                 <Button maxWidth="Infinity" onAction="#mostarEstadisticas" styleClass="button-primary" text="Informes y Gastos" />
-                <Button maxWidth="Infinity" disable="true" styleClass="button-primary" text="Configuración" />
+                <Button maxWidth="Infinity" onAction="#mostrarConfiguracion" styleClass="button-primary" text="Configuración" />
             </VBox>
 
             <VBox VBox.vgrow="ALWAYS" />

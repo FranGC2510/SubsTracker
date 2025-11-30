@@ -46,22 +46,20 @@ public class MainController {
      */
     public void setUsuario(Usuario usuario) {
         this.usuarioLogueado = usuario;
-        lblNombreUsuario.setText(usuario.getNombre());
 
-        String textoIniciales = "";
+        actualizarInfoUsuario(usuario);
 
-        if (usuario.getNombre() != null && !usuario.getNombre().isEmpty()) {
-            String nombre = usuario.getNombre();
-            if (nombre.length() >= 2) {
-                textoIniciales = nombre.substring(0, 2);
-            } else {
-
-                textoIniciales = nombre;
-            }
-        }
-
-        lblIniciales.setText(textoIniciales.toUpperCase());
         cargarVistaSuscripciones();
+    }
+
+    /**
+     * Solo actualiza el nombre y avatar del menú lateral.
+     * Útil para refrescar datos desde Configuración sin cambiar de pantalla.
+     */
+    public void actualizarInfoUsuario(Usuario usuario) {
+        this.usuarioLogueado = usuario; // Aseguramos que tenemos el objeto actualizado
+        lblNombreUsuario.setText(usuario.getNombre());
+        lblIniciales.setText(calcularIniciales(usuario.getNombre()));
     }
 
     /**
@@ -156,6 +154,23 @@ public class MainController {
         } catch (IOException e) {
             e.printStackTrace();
             System.err.println("Error cargando la vista de estadísticas.");
+        }
+    }
+
+    @FXML
+    public void mostrarConfiguracion(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/dam/fcojavier/substracker/view/configView.fxml"));
+            Parent view = loader.load();
+
+            ConfigController controller = loader.getController();
+            controller.initData(this.usuarioLogueado, this);
+
+            contentArea.getChildren().clear();
+            contentArea.getChildren().add(view);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Error cargando la configuración.");
         }
     }
 

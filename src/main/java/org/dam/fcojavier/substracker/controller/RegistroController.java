@@ -14,6 +14,7 @@ import javafx.stage.Stage;
 import javafx.scene.Node;
 import org.dam.fcojavier.substracker.model.Usuario;
 import org.dam.fcojavier.substracker.utils.Dialogos;
+import org.dam.fcojavier.substracker.utils.PasswordUtilidades;
 import org.dam.fcojavier.substracker.utils.Validaciones;
 
 import java.io.IOException;
@@ -120,7 +121,9 @@ public class RegistroController {
             return;
         }
 
-        Usuario nuevoUsuario = new Usuario(0, nombre, apellidos, email, password);
+        String passEncriptada = PasswordUtilidades.hashPassword(password);
+
+        Usuario nuevoUsuario = new Usuario(0, nombre, apellidos, email, passEncriptada);
 
         if (usuarioDAO.create(nuevoUsuario)) {
             irAlDashboard(nuevoUsuario);

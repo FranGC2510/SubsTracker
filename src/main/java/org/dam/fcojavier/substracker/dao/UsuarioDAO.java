@@ -53,8 +53,7 @@ public class UsuarioDAO implements CrudDao<Usuario> {
             pstm.setString(1, usuario.getNombre());
             pstm.setString(2, usuario.getApellidos());
             pstm.setString(3, usuario.getEmail());
-            String passwordHashed = PasswordUtilidades.hashPassword(usuario.getPassword());
-            pstm.setString(4, passwordHashed);
+            pstm.setString(4, usuario.getPassword());
 
             if (pstm.executeUpdate() > 0) {
                 ResultSet rs = pstm.getGeneratedKeys();
@@ -132,8 +131,7 @@ public class UsuarioDAO implements CrudDao<Usuario> {
             pstm.setString(1, usuario.getNombre());
             pstm.setString(2, usuario.getApellidos());
             pstm.setString(3, usuario.getEmail());
-            String passwordHashed = PasswordUtilidades.hashPassword(usuario.getPassword());
-            pstm.setString(4, passwordHashed);
+            pstm.setString(4, usuario.getPassword());
             pstm.setInt(5, usuario.getId_usuario());
 
             return pstm.executeUpdate() > 0;
