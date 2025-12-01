@@ -1,8 +1,11 @@
 package org.dam.fcojavier.substracker.controller;
 
+import javafx.event.ActionEvent;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.layout.Region;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import org.dam.fcojavier.substracker.dao.ParticipaDAO;
 import org.dam.fcojavier.substracker.dao.SuscripcionDAO;
 import javafx.fxml.FXML;
@@ -14,7 +17,12 @@ import org.dam.fcojavier.substracker.model.enums.Ciclo;
 import org.dam.fcojavier.substracker.model.Participa;
 import org.dam.fcojavier.substracker.model.Suscripcion;
 import org.dam.fcojavier.substracker.model.Usuario;
+import org.dam.fcojavier.substracker.utils.Dialogos;
 
+import java.io.File;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -211,6 +219,73 @@ public class InformesController {
             case TRIMESTRAL: return precio / 3.0;
             case ANUAL: return precio / 12.0;
             default: return precio;
+        }
+    }
+
+    /**
+     * Exporta los datos actuales a un archivo de texto CSV compatible con Excel.
+     */
+    @FXML
+    private void exportarCSV(ActionEvent event) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Guardar Informe de Gastos");
+        fileChooser.setInitialFileName("gastos_substracker.csv");
+
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Archivos CSV", "*.csv"));
+
+        Stage stage = (Stage) lblGastoMensual.getScene().getWindow();
+        File file = fileChooser.showSaveDialog(stage);
+
+        if (file != null) {
+            guardarArchivo(file);
+        }
+    }
+
+    /**
+     * Lógica de escritura del archivo CSV.
+     * Estructura: Encabezados -> Resumen KPIs -> Tabla Detallada.
+     */
+    private void guardarArchivo(File file) {
+        String SEPARADOR = ";";
+
+        Stage stage = (Stage) lblGastoMensual.getScene().getWindow();
+
+        try (PrintWriter writer = new PrintWriter(file, StandardCharsets.UTF_8)) {
+
+            writer.println("INFORME DE GASTOS - SUBTRACKER");
+            writer.println("Fecha Generación" + SEPARADOR + LocalDate.now());
+            writer.println();
+
+            writer.println("RESUMEN MENSUAL");
+            String gastoTotal = lblGastoMensual.getText().replace(" €", "");
+            String ahorroTotal = lblAhorro.getText().replace(" €", "").replace("+ ", "");
+
+            writer.println("Gasto Mensual Neto" + SEPARADOR + gastoTotal + " €");
+            writer.println("Ahorro por Colaboradores" + SEPARADOR + ahorroTotal + " €");
+            writer.println();
+
+            writer.println("DETALLE DE SERVICIOS");
+            writer.println("Servicio" + SEPARADOR + "Precio Original" + SEPARADOR + "Ciclo" + SEPARADOR + "Categoría" + SEPARADOR + "Estado");
+
+            List<Suscripcion> lista = suscripcionDAO.findByTitularId(usuarioLogueado.getId_usuario());
+
+            for (Suscripcion s : lista) {
+                // Netflix;17.99;MENSUAL;OCIO;ACTIVA
+                StringBuilder linea = new StringBuilder();
+                linea.append(s.getNombre()).append(SEPARADOR);
+                linea.append(s.getPrecio()).append(" €").append(SEPARADOR);
+                linea.append(s.getCiclo()).append(SEPARADOR);
+                linea.append(s.getCategoria()).append(SEPARADOR);
+                linea.append(s.isActivo() ? "ACTIVA" : "PAUSADA");
+
+                writer.println(linea);
+            }
+
+            Dialogos.mostrarInformacion("Exportación Exitosa", "El archivo se ha guardado correctamente.", stage);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Dialogos.mostrarError("Error de Exportación", "No se pudo guardar el archivo. Comprueba los permisos.", stage);
         }
     }
 }
