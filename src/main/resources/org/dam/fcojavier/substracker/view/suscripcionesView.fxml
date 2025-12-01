@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+<VBox spacing="0.0" styleClass="background-pane" stylesheets="@style.css"
+      xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.dam.fcojavier.substracker.controller.SuscripcionesController">
+
+    <HBox alignment="CENTER_LEFT" spacing="15.0" style="-fx-padding: 20 30 20 30; -fx-background-color: -fx-primary-color; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 10, 0, 0, 2);">
+
+        <VBox>
+            <Label style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: white;" text="Mis Suscripciones" />
+            <Label style="-fx-font-size: 14; -fx-text-fill: -fx-text-muted;" text="Listado general" />
+        </VBox>
+
+        <Region HBox.hgrow="ALWAYS" />
+
+        <ComboBox fx:id="filterCategoria" prefWidth="150.0" promptText="Todas las Categorías" style="-fx-background-radius: 20; -fx-border-radius: 20;" />
+
+        <ComboBox fx:id="filterEstado" prefWidth="130.0" promptText="Todos los Estados" style="-fx-background-radius: 20; -fx-border-radius: 20;" />
+
+        <TextField fx:id="txtBuscar" promptText="Buscar..." prefWidth="200.0" style="-fx-background-radius: 20; -fx-border-radius: 20; -fx-background-color: -fx-secondary-color; -fx-text-fill: white;" />
+
+        <Button onAction="#handleNuevaSuscripcion" styleClass="button-primary" text="+ Nueva" />
+    </HBox>
+
+    <VBox spacing="10.0" VBox.vgrow="ALWAYS">
+        <padding>
+            <Insets bottom="20.0" left="30.0" right="30.0" top="20.0" />
+        </padding>
+
+        <TableView fx:id="tablaSuscripciones" VBox.vgrow="ALWAYS">
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+            </columnResizePolicy>
+            <columns>
+                <TableColumn fx:id="colNombre" prefWidth="300.0" text="SERVICIO" />
+
+                <TableColumn fx:id="colPrecio" prefWidth="120.0" style="-fx-alignment: CENTER;" text="PRECIO" />
+
+                <TableColumn fx:id="colColaboradores" prefWidth="120.0" style="-fx-alignment: CENTER;" text="COMPARTIDA" />
+
+                <TableColumn fx:id="colProximoPago" prefWidth="200.0" style="-fx-alignment: CENTER;" text="PRÓXIMO PAGO" />
+
+                <TableColumn fx:id="colAcciones" prefWidth="120.0" style="-fx-alignment: CENTER;" text="ACCIONES" />
+            </columns>
+
+            <placeholder>
+                <VBox alignment="CENTER" spacing="5.0">
+                    <Label style="-fx-text-fill: -fx-text-muted;" text="No se han encontrado suscripciones" />
+                </VBox>
+            </placeholder>
+        </TableView>
+
+        <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 14px;" text="Doble clic para ver detalles, editar o eliminar." />
+    </VBox>
+
+</VBox>

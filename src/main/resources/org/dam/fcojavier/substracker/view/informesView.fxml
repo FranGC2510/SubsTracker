@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.chart.PieChart?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.CategoryAxis?>
+<HBox spacing="0.0" styleClass="background-pane" stylesheets="@style.css"
+      xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.dam.fcojavier.substracker.controller.InformesController">
+
+    <VBox spacing="20.0" HBox.hgrow="ALWAYS">
+        <padding>
+            <Insets bottom="30.0" left="30.0" right="20.0" top="30.0" />
+        </padding>
+
+        <HBox alignment="CENTER_LEFT">
+            <VBox>
+                <Label style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: white;" text="Análisis de Gastos" />
+                <Label style="-fx-font-size: 14; -fx-text-fill: -fx-text-muted;" text="Desglose por categoría de servicio" />
+            </VBox>
+
+            <Region HBox.hgrow="ALWAYS" />
+
+            <Button onAction="#exportarCSV" styleClass="button-secondary" text="Exportar CSV" />
+        </HBox>
+
+        <VBox styleClass="card-pane" style="-fx-max-width: Infinity;" VBox.vgrow="ALWAYS">
+
+            <BarChart fx:id="chartBarras" legendVisible="false" verticalGridLinesVisible="false" horizontalGridLinesVisible="true" VBox.vgrow="ALWAYS">
+                <xAxis>
+                    <CategoryAxis label="CATEGORÍA" side="BOTTOM" tickLabelFill="WHITE" />
+                </xAxis>
+                <yAxis>
+                    <NumberAxis label="GASTO MENSUAL (€)" side="LEFT" tickLabelFill="WHITE" />
+                </yAxis>
+            </BarChart>
+        </VBox>
+    </VBox>
+
+    <VBox minWidth="300.0" maxWidth="350.0" spacing="25.0" style="-fx-background-color: rgba(0,0,0,0.2); -fx-border-color: transparent transparent transparent rgba(255,255,255,0.05);">
+        <padding>
+            <Insets bottom="30.0" left="30.0" right="30.0" top="40.0" />
+        </padding>
+
+        <VBox spacing="5.0">
+            <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 13px; -fx-font-weight: bold;" text="TU GASTO MENSUAL" />
+            <Label fx:id="lblGastoMensual" style="-fx-font-size: 48; -fx-font-weight: bold; -fx-text-fill: -fx-accent-color;" text="0.00 €" />
+
+            <HBox spacing="10.0">
+                <Label style="-fx-text-fill: #2ecc71;" text="Ahorro:" />
+                <Label fx:id="lblAhorro" style="-fx-text-fill: #2ecc71; -fx-font-weight: bold;" text="0.00 €" />
+            </HBox>
+        </VBox>
+
+        <Separator opacity="0.1" />
+
+        <VBox spacing="15.0" VBox.vgrow="ALWAYS">
+            <Label style="-fx-text-fill: white; -fx-font-size: 16; -fx-font-weight: bold;" text="Top 3 Más Caros" />
+
+            <VBox fx:id="boxTopGastos" spacing="10.0" />
+
+            <Region VBox.vgrow="ALWAYS" />
+
+            <VBox style="-fx-background-color: rgba(255,255,255,0.05); -fx-padding: 15; -fx-background-radius: 10;">
+                <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 12;" text="PROYECCIÓN ANUAL" />
+                <Label fx:id="lblProyeccionAnual" style="-fx-text-fill: white; -fx-font-size: 20; -fx-font-weight: bold;" text="0.00 €" />
+            </VBox>
+        </VBox>
+
+    </VBox>
+
+</HBox>

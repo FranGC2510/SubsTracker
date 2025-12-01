@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+<VBox prefWidth="400.0" spacing="0.0" style="-fx-background-color: -fx-secondary-color; -fx-border-color: #536e8a; -fx-border-width: 1; -fx-background-radius: 10; -fx-border-radius: 10;" stylesheets="@style.css"
+      xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.dam.fcojavier.substracker.controller.FormCobroController">
+
+    <HBox alignment="CENTER_LEFT" spacing="15.0" style="-fx-background-color: -fx-primary-color; -fx-background-radius: 9 9 0 0; -fx-padding: 20;">
+        <VBox>
+            <Label style="-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: white;" text="Registrar Pago" />
+            <Label fx:id="lblNombreSuscripcion" style="-fx-font-size: 13; -fx-text-fill: -fx-accent-color;" text="Nombre del Servicio" />
+        </VBox>
+    </HBox>
+
+    <VBox spacing="15.0">
+        <padding>
+            <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
+        </padding>
+
+        <HBox spacing="15.0">
+            <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 12px;" text="FECHA DEL PAGO" />
+                <DatePicker fx:id="dpFecha" maxWidth="Infinity" />
+            </VBox>
+
+            <VBox spacing="5.0" prefWidth="120.0">
+                <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 12px;" text="PERIODOS" />
+                <Spinner fx:id="spinnerPeriodos" editable="true" maxWidth="Infinity" />
+            </VBox>
+        </HBox>
+
+        <VBox spacing="5.0">
+            <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 12px;" text="MÉTODO DE PAGO" />
+            <ComboBox fx:id="comboMetodo" maxWidth="Infinity" />
+        </VBox>
+
+        <VBox spacing="5.0">
+            <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 12px;" text="NOTAS (OPCIONAL)" />
+            <TextField fx:id="txtDescripcion" promptText="Ej. Recibo enero..." />
+        </VBox>
+
+        <Label fx:id="lblError" styleClass="error-label" visible="false" />
+
+    </VBox>
+
+    <HBox alignment="CENTER_RIGHT" spacing="10.0" style="-fx-padding: 0 25 25 25;">
+        <Button cancelButton="true" onAction="#cerrar" styleClass="button-secondary" text="Cancelar" />
+        <Button defaultButton="true" onAction="#guardar" styleClass="button-primary" text="Confirmar Pago" />
+    </HBox>
+
+</VBox>
