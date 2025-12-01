@@ -1,16 +1,5 @@
 package org.dam.fcojavier.substracker;
 
-import org.dam.fcojavier.substracker.dao.CobroDAO;
-import org.dam.fcojavier.substracker.dao.ParticipaDAO;
-import org.dam.fcojavier.substracker.dao.SuscripcionDAO;
-import org.dam.fcojavier.substracker.dao.UsuarioDAO;
-import org.dam.fcojavier.substracker.model.Cobro;
-import org.dam.fcojavier.substracker.model.Participa;
-import org.dam.fcojavier.substracker.model.Suscripcion;
-import org.dam.fcojavier.substracker.model.Usuario;
-import org.dam.fcojavier.substracker.model.enums.Categoria;
-import org.dam.fcojavier.substracker.model.enums.Ciclo;
-import org.dam.fcojavier.substracker.model.enums.MetodoPago;
 import org.dam.fcojavier.substracker.utils.PasswordUtilidades;
 
 import java.io.BufferedReader;
@@ -19,7 +8,6 @@ import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
-import java.time.LocalDate;
 import java.util.stream.Collectors;
 
 public class Tests {
@@ -172,7 +160,7 @@ public class Tests {
             }
 
             // 3. Leer el archivo SQL
-            InputStream is = Tests.class.getResourceAsStream("/datos_prueba.sql");
+            InputStream is = Tests.class.getResourceAsStream("/configDB/datos_prueba.sql");
             if (is == null) {
                 System.err.println("❌ Error: No encuentro 'datos_prueba.sql' en resources.");
                 return;

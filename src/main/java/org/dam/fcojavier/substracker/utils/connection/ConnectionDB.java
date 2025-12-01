@@ -133,6 +133,13 @@ public class ConnectionDB {
         } catch (SQLException e) { e.printStackTrace(); }
     }
 
+    /**
+     * Devuelve el tipo de base de datos que está activa actualmente.
+     */
+    public static DBType getTipoSeleccionado() {
+        return tipoSeleccionado;
+    }
+
     // Métodos privados
 
     /**
@@ -146,7 +153,7 @@ public class ConnectionDB {
             }
         } catch (SQLException e) {
             System.out.println("Base de datos SQLite nueva. Creando tablas...");
-            ejecutarScriptSQL("/script_sqlite.sql");
+            ejecutarScriptSQL("/configDB/script_sqlite.sql");
         }
     }
 

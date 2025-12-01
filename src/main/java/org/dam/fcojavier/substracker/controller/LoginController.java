@@ -184,7 +184,8 @@ public class LoginController {
             Parent root = loader.load();
 
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root, 750, 700);
+
+            Scene scene = new Scene(root, 750, 720);
 
             stage.setScene(scene);
             stage.show();

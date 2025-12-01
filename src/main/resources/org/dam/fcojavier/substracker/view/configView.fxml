@@ -7,74 +7,106 @@
 <?import javafx.scene.layout.*?>
 
 <?import javafx.geometry.Insets?>
-<VBox spacing="20.0" styleClass="background-pane" stylesheets="@style.css"
+<VBox spacing="30.0" styleClass="background-pane" stylesheets="@style.css"
       xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="org.dam.fcojavier.substracker.controller.ConfigController">
 
     <padding>
-        <Insets bottom="30.0" left="40.0" right="40.0" top="30.0" />
+        <Insets bottom="40.0" left="50.0" right="50.0" top="40.0" />
     </padding>
 
-    <VBox>
-        <Label style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: white;" text="Configuración" />
-        <Label style="-fx-font-size: 14; -fx-text-fill: -fx-text-muted;" text="Gestiona tu perfil y cuenta" />
+    <HBox alignment="CENTER_LEFT">
+        <VBox>
+            <Label style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: white;" text="Configuración" />
+            <Label style="-fx-font-size: 16; -fx-text-fill: -fx-text-muted;" text="Gestiona tu perfil y preferencias" />
+        </VBox>
+    </HBox>
+
+    <VBox maxWidth="Infinity" styleClass="card-pane" style="-fx-max-width: Infinity; -fx-padding: 20 30 20 30;">
+        <HBox alignment="CENTER_LEFT" spacing="25.0">
+            <Label fx:id="lblIconoBD" style="-fx-font-size: 38;" text="☁" />
+            <VBox HBox.hgrow="ALWAYS" spacing="5.0">
+                <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 13px; -fx-font-weight: bold;" text="ALMACENAMIENTO ACTUAL" />
+                <HBox alignment="BASELINE_LEFT" spacing="15.0">
+                    <Label fx:id="lblNombreBD" style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: white;" text="Nube (MySQL)" />
+                    <Label style="-fx-font-size: 14; -fx-text-fill: #2ecc71;" text="● Conectado" />
+                </HBox>
+                <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 14;" text="Los datos locales y en la nube son independientes." />
+            </VBox>
+        </HBox>
     </VBox>
 
-    <HBox spacing="30.0" VBox.vgrow="ALWAYS">
+    <GridPane hgap="30.0" vgap="30.0" VBox.vgrow="ALWAYS">
+        <columnConstraints>
+            <ColumnConstraints hgrow="ALWAYS" percentWidth="50.0" />
+            <ColumnConstraints hgrow="ALWAYS" percentWidth="50.0" />
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints vgrow="SOMETIMES" />
+        </rowConstraints>
 
-        <VBox spacing="15.0" styleClass="card-pane" minWidth="400.0">
-            <Label styleClass="subtitle-label" text="MIS DATOS" />
-
-            <VBox spacing="5.0">
-                <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 12px; -fx-font-weight: bold;" text="NOMBRE" />
-                <TextField fx:id="txtNombre" />
-            </VBox>
-
-            <VBox spacing="5.0">
-                <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 12px; -fx-font-weight: bold;" text="APELLIDOS" />
-                <TextField fx:id="txtApellidos" />
-            </VBox>
-
-            <VBox spacing="5.0">
-                <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 12px; -fx-font-weight: bold;" text="EMAIL" />
-                <TextField fx:id="txtEmail" />
-            </VBox>
-
+        <VBox maxWidth="Infinity" spacing="20.0" styleClass="card-pane" style="-fx-max-width: Infinity;" GridPane.columnIndex="0">
+            <HBox alignment="CENTER_LEFT" spacing="15.0">
+                <Label style="-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: -fx-accent-color;" text="MIS DATOS PERSONALES" />
+            </HBox>
             <Separator opacity="0.1" />
 
-            <HBox alignment="CENTER_RIGHT">
-                <Button onAction="#guardarDatos" styleClass="button-primary" text="Guardar Cambios" />
-            </HBox>
-        </VBox>
+            <VBox spacing="8.0">
+                <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 14px; -fx-font-weight: bold;" text="NOMBRE" />
+                <TextField fx:id="txtNombre" style="-fx-font-size: 16px;" />
+            </VBox>
 
-        <VBox spacing="20.0" HBox.hgrow="ALWAYS">
+            <VBox spacing="8.0">
+                <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 14px; -fx-font-weight: bold;" text="APELLIDOS" />
+                <TextField fx:id="txtApellidos" style="-fx-font-size: 16px;" />
+            </VBox>
 
-            <VBox spacing="15.0" styleClass="card-pane">
-                <Label styleClass="subtitle-label" text="CAMBIAR CONTRASEÑA" />
-
-                <HBox spacing="10.0">
-                    <VBox spacing="5.0" HBox.hgrow="ALWAYS">
-                        <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 12px;" text="CONTRASEÑA NUEVA" />
-                        <PasswordField fx:id="txtNuevaPass" promptText="Mínimo 6 caracteres" />
-                    </VBox>
-                    <VBox spacing="5.0" HBox.hgrow="ALWAYS">
-                        <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 12px;" text="CONFIRMAR NUEVA" />
-                        <PasswordField fx:id="txtConfirmPass" promptText="Repite la contraseña" />
-                    </VBox>
-                </HBox>
-
-                <Button onAction="#cambiarPassword" styleClass="button-secondary" text="Actualizar Contraseña" />
+            <VBox spacing="8.0">
+                <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 14px; -fx-font-weight: bold;" text="EMAIL" />
+                <TextField fx:id="txtEmail" style="-fx-font-size: 16px;" />
             </VBox>
 
             <Region VBox.vgrow="ALWAYS" />
 
-            <VBox spacing="10.0" style="-fx-border-color: #e74c3c; -fx-border-width: 1; -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 20; -fx-background-color: rgba(231, 76, 60, 0.05);">
-                <Label style="-fx-text-fill: #e74c3c; -fx-font-weight: bold; -fx-font-size: 14;" text="ZONA DE PELIGRO" />
-                <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 12;" text="Una vez elimines tu cuenta, no hay vuelta atrás. Se borrarán todas tus suscripciones." wrapText="true" />
+            <HBox alignment="CENTER_RIGHT">
+                <Button fx:id="btnGuardarDatos" onAction="#guardarDatos" styleClass="button-secondary" text="Guardar Cambios" disable="true" />
+            </HBox>
+        </VBox>
 
-                <Button onAction="#eliminarCuenta" styleClass="button-danger" text="Eliminar mi cuenta definitivamente" />
+        <VBox maxWidth="Infinity" spacing="20.0" styleClass="card-pane" style="-fx-max-width: Infinity;" GridPane.columnIndex="1">
+            <HBox alignment="CENTER_LEFT" spacing="15.0">
+                <Label style="-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: -fx-accent-color;" text="SEGURIDAD" />
+            </HBox>
+            <Separator opacity="0.1" />
+
+            <VBox spacing="8.0">
+                <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 14px; -fx-font-weight: bold;" text="NUEVA CONTRASEÑA" />
+                <PasswordField fx:id="txtNuevaPass" promptText="Mínimo 6 caracteres" style="-fx-font-size: 16px;" />
             </VBox>
 
+            <VBox spacing="8.0">
+                <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 14px; -fx-font-weight: bold;" text="CONFIRMAR CONTRASEÑA" />
+                <PasswordField fx:id="txtConfirmPass" promptText="Repite la contraseña" style="-fx-font-size: 16px;" />
+            </VBox>
+
+            <Region VBox.vgrow="ALWAYS" />
+
+            <HBox alignment="CENTER_RIGHT">
+                <Button fx:id="btnActualizarPass" onAction="#cambiarPassword" styleClass="button-secondary" text="Actualizar Contraseña" disable="true" />
+            </HBox>
         </VBox>
-    </HBox>
+    </GridPane>
+
+    <VBox maxWidth="Infinity" spacing="15.0" style="-fx-max-width: Infinity; -fx-border-color: #e74c3c; -fx-border-width: 1; -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 25; -fx-background-color: rgba(231, 76, 60, 0.08);">
+        <HBox alignment="CENTER_LEFT" spacing="20.0">
+            <Label style="-fx-font-size: 30;" text="⚠" />
+            <VBox>
+                <Label style="-fx-text-fill: #e74c3c; -fx-font-weight: bold; -fx-font-size: 16;" text="ZONA DE PELIGRO" />
+                <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 14;" text="Eliminar tu cuenta borrará permanentemente todas tus suscripciones y datos." />
+            </VBox>
+            <Region HBox.hgrow="ALWAYS" />
+            <Button onAction="#eliminarCuenta" styleClass="button-danger" style="-fx-font-size: 15px;" text="Eliminar mi cuenta definitivamente" />
+        </HBox>
+    </VBox>
+
 </VBox>
