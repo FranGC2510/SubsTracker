@@ -10,6 +10,7 @@ import org.dam.fcojavier.substracker.model.enums.Ciclo;
 import org.dam.fcojavier.substracker.model.enums.MetodoPago;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -225,8 +226,8 @@ public class ParticipaDAO implements CrudDao<Participa> {
         Participa p = new Participa();
         p.setIdParticipa(rs.getInt("id_participa")); // Nuevo ID
         p.setCantidadApagar(rs.getDouble("cantidadApagar"));
-        Date fecha = rs.getDate("fecha_pagado");
-        if (fecha != null) p.setFecha_pagado(fecha.toLocalDate());
+
+        p.setFecha_pagado(parsearFechaSegura(rs.getString("fecha_pagado")));
 
         p.setMetodo_pago(MetodoPago.valueOf(rs.getString("metodo_pago")));
         p.setPeriodos_cubiertos(rs.getInt("periodos_cubiertos"));
@@ -252,5 +253,29 @@ public class ParticipaDAO implements CrudDao<Participa> {
         p.setSuscripcion(s);
 
         return p;
+    }
+
+    /**
+     * Método auxiliar para convertir fechas de SQLite/MySQL de forma robusta.
+     * Soporta tanto formato ISO (yyyy-MM-dd) como Timestamp (milisegundos).
+     */
+    private LocalDate parsearFechaSegura(String fechaStr) {
+        if (fechaStr == null || fechaStr.isEmpty()) return null;
+
+        try {
+            //MySQL
+            return LocalDate.parse(fechaStr);
+        } catch (Exception e) {
+            try {
+                // SQLite JDBC
+                long millis = Long.parseLong(fechaStr);
+                return java.time.Instant.ofEpochMilli(millis)
+                        .atZone(java.time.ZoneId.systemDefault())
+                        .toLocalDate();
+            } catch (Exception ex) {
+                System.err.println("Error fecha irrecuperable: " + fechaStr);
+                return null;
+            }
+        }
     }
 }

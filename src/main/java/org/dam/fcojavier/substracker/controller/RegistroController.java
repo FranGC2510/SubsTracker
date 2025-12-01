@@ -173,7 +173,8 @@ public class RegistroController {
             Parent root = loader.load();
 
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root, 800, 600);
+
+            Scene scene = new Scene(root, 750, 650);
 
             stage.setScene(scene);
             stage.show();

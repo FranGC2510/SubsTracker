@@ -239,10 +239,7 @@ public class CobroDAO implements CrudDao<Cobro> {
         Cobro cobro = new Cobro();
         cobro.setId_cobro(rs.getInt("id_cobro"));
 
-        Date fechaSql = rs.getDate("fecha_cobro");
-        if (fechaSql != null) {
-            cobro.setFecha_cobro(fechaSql.toLocalDate());
-        }
+        cobro.setFecha_cobro(parsearFechaSegura(rs.getString("fecha_cobro")));
 
         cobro.setMetodo_pago(MetodoPago.valueOf(rs.getString("metodo_pago")));
         cobro.setDescripcion(rs.getString("descripcion"));
@@ -257,5 +254,29 @@ public class CobroDAO implements CrudDao<Cobro> {
         cobro.setSuscripcion(s);
 
         return cobro;
+    }
+
+    /**
+     * Método auxiliar para convertir fechas de SQLite/MySQL de forma robusta.
+     * Soporta tanto formato ISO (yyyy-MM-dd) como Timestamp (milisegundos).
+     */
+    private LocalDate parsearFechaSegura(String fechaStr) {
+        if (fechaStr == null || fechaStr.isEmpty()) return null;
+
+        try {
+            //MySQL
+            return LocalDate.parse(fechaStr);
+        } catch (Exception e) {
+            try {
+                // SQLite JDBC
+                long millis = Long.parseLong(fechaStr);
+                return java.time.Instant.ofEpochMilli(millis)
+                        .atZone(java.time.ZoneId.systemDefault())
+                        .toLocalDate();
+            } catch (Exception ex) {
+                System.err.println("Error fecha irrecuperable: " + fechaStr);
+                return null;
+            }
+        }
     }
 }

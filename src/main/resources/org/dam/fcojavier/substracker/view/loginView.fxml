@@ -25,6 +25,15 @@
 
         <Separator prefWidth="200.0" />
 
+        <HBox alignment="CENTER" spacing="10.0">
+            <Label style="-fx-text-fill: -fx-text-muted; -fx-font-size: 14px;" text="Almacenamiento:" />
+
+            <ComboBox fx:id="comboDB" prefWidth="130.0"
+                      style="-fx-font-size: 12px; -fx-background-color: transparent; -fx-border-color: #536e8a; -fx-border-radius: 5; -fx-padding: 0 0 0 5;" />
+        </HBox>
+
+        <Separator prefWidth="200.0" />
+
         <TextField fx:id="txtEmail" promptText="Correo electrónico" text="fran@gmail.com" />
 
         <PasswordField fx:id="txtPassword" promptText="Contraseña" text="123456" />

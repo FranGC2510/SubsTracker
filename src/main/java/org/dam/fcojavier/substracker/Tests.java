@@ -1,21 +1,18 @@
 package org.dam.fcojavier.substracker;
 
-import org.dam.fcojavier.substracker.dao.CobroDAO;
-import org.dam.fcojavier.substracker.dao.ParticipaDAO;
-import org.dam.fcojavier.substracker.dao.SuscripcionDAO;
-import org.dam.fcojavier.substracker.dao.UsuarioDAO;
-import org.dam.fcojavier.substracker.model.Cobro;
-import org.dam.fcojavier.substracker.model.Participa;
-import org.dam.fcojavier.substracker.model.Suscripcion;
-import org.dam.fcojavier.substracker.model.Usuario;
-import org.dam.fcojavier.substracker.model.enums.Categoria;
-import org.dam.fcojavier.substracker.model.enums.Ciclo;
-import org.dam.fcojavier.substracker.model.enums.MetodoPago;
+import org.dam.fcojavier.substracker.utils.PasswordUtilidades;
 
-import java.time.LocalDate;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
+import java.util.stream.Collectors;
 
 public class Tests {
     public static void main(String[] args) {
+        /**
         System.out.println("🚀 INICIANDO PRUEBAS DE INTEGRACIÓN SUBTRACKER");
         System.out.println("=============================================");
 
@@ -123,7 +120,7 @@ public class Tests {
                     System.out.println("🗑️  Participación eliminada.");
                 else
                     System.err.println("⚠️ Error borrando participación.");
-            }*/
+            }
 
             // 3. Borramos Suscripción (Padre intermedio)
             // IMPORTANTE: Si intentáramos borrar el usuario antes que esto, fallaría por la FK.
@@ -149,6 +146,61 @@ public class Tests {
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println("❌ ERROR EN LA PRUEBA: " + e.getMessage());
+        }*/
+        // 1. URL directa a tu archivo SQLite (Asegúrate que la ruta 'data/...' es correcta)
+        String url = "jdbc:sqlite:data/substracker_local.db";
+
+        System.out.println("🚀 Iniciando carga de datos de prueba...");
+
+        try (Connection con = DriverManager.getConnection(url)) {
+
+            // 2. Activar Foreign Keys
+            try (Statement st = con.createStatement()) {
+                st.execute("PRAGMA foreign_keys = OFF;"); // Apagar para borrar sin miedo
+            }
+
+            // 3. Leer el archivo SQL
+            InputStream is = Tests.class.getResourceAsStream("/configDB/datos_prueba.sql");
+            if (is == null) {
+                System.err.println("❌ Error: No encuentro 'datos_prueba.sql' en resources.");
+                return;
+            }
+
+            String sqlCompleto = new BufferedReader(new InputStreamReader(is))
+                    .lines().collect(Collectors.joining("\n"));
+
+            // 4. Separar las sentencias por punto y coma (;)
+            String[] sentencias = sqlCompleto.split(";");
+
+            // 5. Ejecutar una a una
+            try (Statement st = con.createStatement()) {
+                int cont = 0;
+                for (String sentencia : sentencias) {
+                    if (!sentencia.trim().isEmpty()) {
+                        st.execute(sentencia);
+                        cont++;
+                    }
+                }
+                System.out.println("✅ Éxito: Se han ejecutado " + cont + " sentencias SQL.");
+            }
+
+            String hashValido = PasswordUtilidades.hashPassword("123456");
+
+            System.out.println("🔐 Regenerando contraseñas seguras...");
+            try (Statement stFix = con.createStatement()) {
+                // Actualizamos TODOS los usuarios para que su clave sea "123456"
+                stFix.executeUpdate("UPDATE usuario SET password = '" + hashValido + "'");
+                System.out.println("✅ Todas las contraseñas se han reseteado a: 123456");
+            }
+
+            // Reactivar FK
+            try (Statement st = con.createStatement()) {
+                st.execute("PRAGMA foreign_keys = ON;");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("🔥 Fallo al cargar datos.");
         }
     }
 }

@@ -6,6 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import org.dam.fcojavier.substracker.utils.connection.ConnectionDB;
 
 import java.awt.*;
 import java.io.IOException;
@@ -15,7 +16,7 @@ public class SubsTrackerApp extends Application {
     public void start(Stage stage) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/dam/fcojavier/substracker/view/loginView.fxml"));
         Parent root = loader.load();
-        Scene scene = new Scene(root, 750, 600);
+        Scene scene = new Scene(root, 750, 650);
 
         try {
             Image icon = new Image(getClass().getResourceAsStream("/ic_app.png"));
@@ -47,6 +48,25 @@ public class SubsTrackerApp extends Application {
         stage.setScene(scene);
         stage.setResizable(false);
         stage.show();
+    }
+
+    /**
+     * Método del Ciclo de Vida de JavaFX.
+     * Se ejecuta AUTOMÁTICAMENTE justo antes de que el proceso muera.
+     */
+    @Override
+    public void stop() throws Exception {
+        System.out.println("PARANDO APLICACIÓN...");
+
+        // AQUÍ CERRAMOS LA CONEXIÓN
+        try {
+            ConnectionDB.closeConnection();
+            System.out.println("Conexión a Base de Datos cerrada con éxito.");
+        } catch (Exception e) {
+            System.err.println("Error al cerrar la conexión: " + e.getMessage());
+        }
+
+        super.stop();
     }
 
     public static void main(String[] args) {

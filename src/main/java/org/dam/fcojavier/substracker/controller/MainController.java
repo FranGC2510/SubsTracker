@@ -86,12 +86,19 @@ public class MainController {
     @FXML
     public void cerrarSesion(ActionEvent event) {
         try {
+            this.usuarioLogueado = null;
+
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/dam/fcojavier/substracker/view/loginView.fxml"));
             Parent root = loader.load();
 
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root, 800, 600);
+
+            stage.setMaximized(false);
+            stage.setResizable(false);
+
+            Scene scene = new Scene(root, 750, 650);
             stage.setScene(scene);
+            stage.centerOnScreen();
             stage.show();
 
             System.out.println("Sesión cerrada.");
