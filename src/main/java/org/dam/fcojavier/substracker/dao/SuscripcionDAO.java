@@ -13,6 +13,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -246,11 +247,12 @@ public class SuscripcionDAO implements CrudDao<Suscripcion> {
         suscripcion.setCiclo(Ciclo.valueOf(rs.getString("ciclo")));
         suscripcion.setCategoria(Categoria.valueOf(rs.getString("categoria")));
         suscripcion.setActivo(rs.getBoolean("activo"));
-        suscripcion.setFechaActivacion(rs.getDate("fecha_activacion").toLocalDate());
-        suscripcion.setFechaRenovacion(rs.getDate("fecha_renovacion").toLocalDate());
+
+        suscripcion.setFechaActivacion(parsearFechaSegura(rs.getString("fecha_activacion")));
+        suscripcion.setFechaRenovacion(parsearFechaSegura(rs.getString("fecha_renovacion")));
 
         Usuario u = new Usuario();
-        u.setId_usuario(rs.getInt("id_titular")); // O usar rs.getInt("u.id_usuario")
+        u.setId_usuario(rs.getInt("id_titular"));
         u.setEmail(rs.getString("email"));
         u.setNombre(rs.getString("u_nombre"));
         u.setApellidos(rs.getString("apellidos"));
@@ -258,11 +260,35 @@ public class SuscripcionDAO implements CrudDao<Suscripcion> {
 
         suscripcion.setTitular(u);
 
-        // Inicializamos listas vacías para evitar NullPointerException si se usan
+
         suscripcion.setCobros(new ArrayList<>());
         suscripcion.setParticipantes(new ArrayList<>());
 
         return suscripcion;
+    }
+
+    /**
+     * Método auxiliar para convertir fechas de SQLite/MySQL de forma robusta.
+     * Soporta tanto formato ISO (yyyy-MM-dd) como Timestamp (milisegundos).
+     */
+    private LocalDate parsearFechaSegura(String fechaStr) {
+        if (fechaStr == null || fechaStr.isEmpty()) return null;
+
+        try {
+            //MySQL
+            return LocalDate.parse(fechaStr);
+        } catch (Exception e) {
+            try {
+                // SQLite JDBC
+                long millis = Long.parseLong(fechaStr);
+                return java.time.Instant.ofEpochMilli(millis)
+                        .atZone(java.time.ZoneId.systemDefault())
+                        .toLocalDate();
+            } catch (Exception ex) {
+                System.err.println("Error fecha irrecuperable: " + fechaStr);
+                return null;
+            }
+        }
     }
 
     private List<Suscripcion> findByStringField(String sql, String campo){

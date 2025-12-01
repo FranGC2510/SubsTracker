@@ -4,27 +4,28 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 import org.dam.fcojavier.substracker.dao.UsuarioDAO;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
 import org.dam.fcojavier.substracker.model.Usuario;
 import org.dam.fcojavier.substracker.utils.Dialogos;
 import org.dam.fcojavier.substracker.utils.PasswordUtilidades;
 import org.dam.fcojavier.substracker.utils.Validaciones;
 
 import javafx.event.ActionEvent;
+import org.dam.fcojavier.substracker.utils.connection.ConnectionDB;
 
 import java.io.IOException;
 
 /**
  * Controlador de la pantalla de Inicio de Sesión (Login).
  *
- * Gestiona la autenticación de usuarios contra la base de datos.
- * Utiliza algoritmos de hashing (BCrypt) para verificar la contraseña de forma segura.
+ * Esta clase gestiona el punto de entrada a la aplicación. Sus responsabilidades son:
+ *
+ * Autenticar a los usuarios verificando email y contraseña (Hash).
+ * Gestionar la selección del entorno de persistencia (MySQL vs SQLite).
+ * Dirigir al usuario al Dashboard principal o al formulario de registro.
  *
  * @author Fco Javier García
  * @version 2.0
@@ -35,6 +36,7 @@ public class LoginController {
     @FXML private PasswordField txtPassword;
     @FXML private Label lblError;
     @FXML private Button btnLogin;
+    @FXML private ComboBox<String> comboDB;
 
     private final UsuarioDAO usuarioDAO;
 
@@ -47,29 +49,40 @@ public class LoginController {
     }
 
     /**
-     * Inicialización del controlador.
-     * Se asegura de que los mensajes de error estén ocultos al arrancar.
+     * Inicialización del controlador tras la carga del FXML.
+     *
+     * Configura el estado inicial de la vista:
+     * Oculta los mensajes de error.
+     * Puebla el selector de base de datos con las opciones disponibles.
      */
     @FXML
     public void initialize() {
         lblError.setVisible(false);
+        comboDB.getItems().addAll("Nube (MySQL)", "Local (SQLite)");
+        comboDB.getSelectionModel().selectFirst();
     }
 
     /**
-     * Maneja el evento de clic en el botón "ENTRAR".
+     * Procesa el intento de inicio de sesión al pulsar el botón "ENTRAR".
      *
      * Flujo de ejecución:
-     * Limpia estilos de error previos.
-     * Valida que los campos no estén vacíos.
-     * Valida el formato del email.
-     * Consulta la BD para obtener el usuario (y su hash).
-     * Verifica la contraseña usando BCrypt.
-     * Si es correcto, navega al Dashboard.
+     *
+     * Configura la conexión a la BD seleccionada.
+     * Verifica que la conexión esté operativa.
+     * Realiza validaciones de campos vacíos y formato de email.
+     * Delega la autenticación al método {@link #intentarLogin(String, String)}.
      *
      * @param event Evento del botón.
      */
     @FXML
     private void handleLogin(ActionEvent event) {
+        configurarConexionSeleccionada();
+
+        if (ConnectionDB.getConnection() == null) {
+            mostrarMensajeError("No se pudo conectar a la base de datos seleccionada.");
+            return;
+        }
+
         String email = txtEmail.getText();
         String password = txtPassword.getText();
 
@@ -102,7 +115,10 @@ public class LoginController {
     }
 
     /**
-     * Realiza la comprobación de credenciales contra la base de datos.
+     * Realiza la búsqueda del usuario y la verificación de credenciales.
+     *
+     * @param email Email introducido.
+     * @param password Contraseña en texto plano.
      */
     private void intentarLogin(String email, String password) {
         Usuario usuarioEncontrado = usuarioDAO.findByEmail(email);
@@ -123,8 +139,9 @@ public class LoginController {
 
     /**
      * Transición a la pantalla principal (Dashboard) tras un login exitoso.
+     * Configura la ventana principal con el tamaño adecuado y pasa el usuario logueado.
      *
-     * @param usuario El usuario autenticado que se pasará al MainController.
+     * @param usuario El usuario autenticado.
      */
     private void loginExitoso(Usuario usuario) {
         try {
@@ -155,10 +172,13 @@ public class LoginController {
     }
 
     /**
-     * Navega a la vista de registro.
+     * Navega a la vista de registro de nuevo usuario.
+     * Se asegura de configurar la base de datos seleccionada antes de cambiar de pantalla.
      */
     @FXML
     private void irARegistro(ActionEvent event) {
+        configurarConexionSeleccionada();
+
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/dam/fcojavier/substracker/view/registroView.fxml"));
             Parent root = loader.load();
@@ -175,6 +195,17 @@ public class LoginController {
     }
 
     // Métodos auxiliares
+
+    /**
+     * Lee el ComboBox y establece el tipo de base de datos en el Singleton de conexión.
+     */
+    private void configurarConexionSeleccionada() {
+        if (comboDB.getSelectionModel().getSelectedIndex() == 0) {
+            ConnectionDB.setTipo(ConnectionDB.DBType.MYSQL);
+        } else {
+            ConnectionDB.setTipo(ConnectionDB.DBType.SQLITE);
+        }
+    }
 
     private void limpiarEstilos() {
         lblError.setVisible(false);
