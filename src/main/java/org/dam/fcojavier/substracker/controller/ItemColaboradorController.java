@@ -56,14 +56,14 @@ public class ItemColaboradorController {
 
         if (pagado) {
             lblEstado.setText("PAGADO");
-            lblEstado.setStyle("-fx-text-fill: #2ecc71;"); // Texto verde
+            lblEstado.setStyle("-fx-text-fill: #2ecc71;");
             lblImporte.setStyle("-fx-text-fill: #2ecc71; -fx-font-size: 16px; -fx-font-weight: bold;");
-            root.getStyleClass().add("card-pagado"); // Borde verde
+            root.getStyleClass().add("card-pagado");
         } else {
             lblEstado.setText("PENDIENTE");
-            lblEstado.setStyle("-fx-text-fill: #e74c3c;"); // Texto rojo
+            lblEstado.setStyle("-fx-text-fill: #e74c3c;");
             lblImporte.setStyle("-fx-text-fill: #e74c3c; -fx-font-size: 16px; -fx-font-weight: bold;");
-            root.getStyleClass().add("card-pendiente"); // Borde rojo
+            root.getStyleClass().add("card-pendiente");
         }
         root.setOnMouseClicked(event -> {
             if (onEditAction != null) {

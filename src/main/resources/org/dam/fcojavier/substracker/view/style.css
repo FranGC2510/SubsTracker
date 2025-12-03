@@ -65,7 +65,7 @@
 /* --- Botones --- */
 .button-primary {
     -fx-background-color: -fx-accent-color;
-    -fx-text-fill: #1E2A38; /* Texto oscuro para contraste con el turquesa brillante */
+    -fx-text-fill: #1E2A38;
     -fx-font-weight: bold;
     -fx-font-size: 15px;
     -fx-background-radius: 8;
