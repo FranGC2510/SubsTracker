@@ -260,7 +260,6 @@ public class SuscripcionDAO implements CrudDao<Suscripcion> {
 
         suscripcion.setTitular(u);
 
-
         suscripcion.setCobros(new ArrayList<>());
         suscripcion.setParticipantes(new ArrayList<>());
 
