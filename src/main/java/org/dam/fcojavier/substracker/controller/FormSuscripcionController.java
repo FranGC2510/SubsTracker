@@ -125,11 +125,10 @@ public class FormSuscripcionController {
 
         if (fechaPrimerPago.isBefore(fechaActivacion)) {
             mostrarError("El pago no puede ser anterior a la fecha de activación.");
-            // Efecto visual: marcamos el DatePicker de pago
             dpFechaInicio.setStyle("-fx-border-color: #e74c3c;");
             return;
         } else {
-            dpFechaInicio.setStyle(""); // Limpiar estilo si pasa
+            dpFechaInicio.setStyle("");
         }
 
         LocalDate fechaRenovacion = fechaPrimerPago;

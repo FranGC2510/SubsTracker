@@ -1,5 +1,5 @@
 Markdown
-![Logo SubsTracker](src/main/resources/logo.png)
+![Logo SubsTracker](documentacion/logo_fondoON.png)
 
 > **Tu vida digital, bajo control.** > Gestiona tus suscripciones, controla tus gastos mensuales y lleva la cuenta de los pagos compartidos con amigos y familiares de forma sencilla y elegante.
 
